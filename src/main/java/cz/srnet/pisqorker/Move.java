@@ -1,6 +1,7 @@
 package cz.srnet.pisqorker;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.springframework.lang.NonNull;
 
@@ -32,5 +33,7 @@ public interface Move {
 
 	@NonNull
 	Move move(@NonNull Player player, int x, int y);
+
+	void forEachPrevious(@NonNull Consumer<Move> action);
 
 }

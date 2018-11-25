@@ -6,10 +6,6 @@ import java.util.Optional;
 
 import org.springframework.lang.NonNull;
 
-import cz.srnet.pisqorker.GameState;
-import cz.srnet.pisqorker.Move;
-import cz.srnet.pisqorker.Player;
-
 final class MoveAssert {
 
 	private @NonNull Move move;
@@ -83,6 +79,12 @@ final class MoveAssert {
 	@NonNull
 	MoveAssert nextPlayer(@NonNull Player expected) {
 		assertEquals(expected, move.nextPlayer());
+		return this;
+	}
+
+	@NonNull
+	MoveAssert allPreviousStarted() {
+		move.forEachPrevious(m -> assertEquals(GameState.started, m.state()));
 		return this;
 	}
 

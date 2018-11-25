@@ -1,8 +1,12 @@
 package cz.srnet.pisqorker;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
@@ -10,13 +14,9 @@ import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
-import cz.srnet.pisqorker.GameState;
-import cz.srnet.pisqorker.Move;
-import cz.srnet.pisqorker.MoveImpl;
-import cz.srnet.pisqorker.Player;
-
 final class MoveImplTest {
 
+	private @NonNull FakeRules rules = new FakeRules(21, 5);
 	private @NonNull FakeNextMoves nextMoves = new FakeNextMoves()._next(whatever -> Optional.empty());
 
 	@Test
@@ -28,7 +28,7 @@ final class MoveImplTest {
 	}
 
 	private @NonNull MoveImpl newFirstMove() {
-		return new MoveImpl(nextMoves, 0, 0);
+		return new MoveImpl(rules, nextMoves, 0, 0);
 	}
 
 	@Test
@@ -69,9 +69,54 @@ final class MoveImplTest {
 	}
 
 	@Test
-	void illegalPositionSecondMove() {
+	void occupiedPositionSecondMove() {
 		Move firstMove = newFirstMove();
 
 		assertThrows(IllegalArgumentException.class, () -> firstMove.move(0, 0));
 	}
+
+	@Test
+	void outOfBoardPositionSecondMove() {
+		rules = new FakeRules(1, 5);
+
+		Move firstMove = newFirstMove();
+
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(1, 1));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(-1, -1));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(1, -1));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(-1, 1));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(2, 2));
+	}
+
+	@Test
+	void drawOnFirstMove() {
+		rules = new FakeRules(1, 5);
+
+		Move firstMove = newFirstMove();
+
+		new MoveAssert(firstMove).state(GameState.draw);
+	}
+
+	@Test
+	void drawOn3x3() {
+		rules = new FakeRules(3, 5);
+
+		Move lastMove = newFirstMove().move(-1, -1).move(-1, 0).move(-1, 1).move(0, -1).move(0, 1).move(1, -1)
+				.move(1, 0).move(1, 1);
+
+		new MoveAssert(lastMove).allPreviousStarted().state(GameState.draw);
+	}
+
+	@Test
+	void forEachPrevious() {
+		Move firstMove = newFirstMove();
+		Move secondMove = firstMove.move(1, 1);
+		Move thirdMove = secondMove.move(-1, -1);
+
+		List<Move> consumed = new ArrayList<>();
+		thirdMove.forEachPrevious(consumed::add);
+
+		assertEquals(Arrays.asList(secondMove, firstMove), consumed);
+	}
+
 }
