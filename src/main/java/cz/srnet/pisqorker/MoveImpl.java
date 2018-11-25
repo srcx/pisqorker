@@ -2,48 +2,62 @@ package cz.srnet.pisqorker;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.springframework.lang.NonNull;
 
 final class MoveImpl implements Move {
 
-	private final @NonNull Rules rules;
+	private final @NonNull GameContext context;
 	private final @NonNull Optional<Move> previous;
-	private final @NonNull NextMoves nextMoves;
 	private final int turn;
 	private final @NonNull Player player;
 	private final int x;
 	private final int y;
+	private final @NonNull GameState state;
 
-	public MoveImpl(@NonNull Rules rules, @NonNull NextMoves nextMoves, int x, int y) {
-		this(rules, Optional.empty(), nextMoves, x, y);
+	public MoveImpl(@NonNull GameContext context, int x, int y) {
+		this(context, Optional.empty(), x, y);
 	}
 
-	private MoveImpl(@NonNull Rules rules, @NonNull Optional<Move> previous, @NonNull NextMoves nextMoves, int x,
-			int y) {
-		checkIfOutOfBounds(rules, x, y);
+	private MoveImpl(@NonNull GameContext context, @NonNull Optional<Move> previous, int x, int y) {
+		checkIfOutOfBounds(context.rules(), x, y);
 		checkIfOccupied(previous, x, y);
-		this.rules = rules;
+		this.context = context;
 		this.previous = previous;
-		this.nextMoves = nextMoves;
 		this.x = x;
 		this.y = y;
 		turn = previous().map(Move::turn).map(i -> i + 1).orElse(1);
 		player = Objects.requireNonNull(previous().map(Move::player).map(Player::next).orElse(Player.X));
+		state = determineState();
 	}
 
 	@Override
 	@NonNull
 	public GameState state() {
+		return state;
+	}
+
+	private @NonNull GameState determineState() {
 		if (isDraw()) {
 			return GameState.draw;
+		}
+		if (isWon()) {
+			return GameState.wonBy(player);
 		}
 		return GameState.started;
 	}
 
 	private boolean isDraw() {
-		return turn == rules.boardSize() * rules.boardSize();
+		int boardSize = context.rules().boardSize();
+		return turn == boardSize * boardSize;
+	}
+
+	private boolean isWon() {
+		return context.winConditionChecker().isWon(this);
 	}
 
 	@Override
@@ -65,13 +79,13 @@ final class MoveImpl implements Move {
 	@Override
 	@NonNull
 	public Optional<Move> next() {
-		return nextMoves.next(this);
+		return context.nextMoves().next(this);
 	}
 
 	@Override
 	@NonNull
 	public Move move(int x, int y) {
-		return new MoveImpl(rules, Optional.of(this), nextMoves, x, y);
+		return new MoveImpl(context, Optional.of(this), x, y);
 	}
 
 	@Override
@@ -102,7 +116,7 @@ final class MoveImpl implements Move {
 	}
 
 	private static void checkIfOccupied(@NonNull Optional<Move> move, int x, int y) {
-		forGivenMoveAndEachPrevious(move, m -> {
+		givenAndPreviousStream(move).forEach(m -> {
 			if (m.x() == x && m.y() == y) {
 				throw new IllegalArgumentException("Position [" + x + ", " + y + "] is already occupied");
 			}
@@ -116,14 +130,48 @@ final class MoveImpl implements Move {
 	}
 
 	@Override
-	public void forEachPrevious(@NonNull Consumer<Move> action) {
-		forGivenMoveAndEachPrevious(previous(), action);
+	@NonNull
+	public Stream<Move> previousStream() {
+		return givenAndPreviousStream(previous());
 	}
 
-	private static void forGivenMoveAndEachPrevious(@NonNull Optional<Move> move, @NonNull Consumer<Move> action) {
-		while (move.isPresent()) {
-			move.ifPresent(action);
-			move = Objects.requireNonNull(move.map(Move::previous).orElse(Optional.empty()));
+	private static @NonNull Stream<Move> givenAndPreviousStream(@NonNull Optional<Move> move) {
+		Spliterator<Move> spliterator = new PreviousSpliterator(move);
+		return Objects.requireNonNull(StreamSupport.stream(spliterator, false));
+	}
+
+	private static final class PreviousSpliterator implements Spliterator<Move> {
+
+		private @NonNull Optional<Move> current;
+
+		public PreviousSpliterator(@NonNull Optional<Move> current) {
+			this.current = current;
+		}
+
+		@Override
+		public boolean tryAdvance(Consumer<? super Move> action) {
+			if (current.isPresent()) {
+				current.ifPresent(action);
+				current = Objects.requireNonNull(current.map(Move::previous).orElse(Optional.empty()));
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public Spliterator<Move> trySplit() {
+			return null;
+		}
+
+		@Override
+		public long estimateSize() {
+			return current.map(Move::turn).orElse(0);
+		}
+
+		@Override
+		public int characteristics() {
+			return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED
+					| Spliterator.SIZED | Spliterator.SUBSIZED;
 		}
 	}
 

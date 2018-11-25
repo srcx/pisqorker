@@ -84,7 +84,7 @@ final class MoveAssert {
 
 	@NonNull
 	MoveAssert allPreviousStarted() {
-		move.forEachPrevious(m -> assertEquals(GameState.started, m.state()));
+		move.previousStream().forEach(m -> assertEquals(GameState.started, m.state()));
 		return this;
 	}
 

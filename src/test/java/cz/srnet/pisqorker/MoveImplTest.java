@@ -1,51 +1,58 @@
 package cz.srnet.pisqorker;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.lang.NonNull;
 
 final class MoveImplTest {
 
-	private @NonNull FakeRules rules = new FakeRules(21, 5);
-	private @NonNull FakeNextMoves nextMoves = new FakeNextMoves()._next(whatever -> Optional.empty());
+	private @NonNull FakeGameContext context = new FakeGameContext();
+
+	@BeforeEach
+	void setUp() {
+		context.nextMoves()._next(whatever -> Optional.empty());
+	}
 
 	@Test
-	void firstMove() {
-		Move firstMove = newFirstMove();
+	void testFirstMove() {
+		Move firstMove = firstMove();
 
 		new MoveAssert(firstMove).turn(1).state(GameState.started).player(Player.X).nextPlayer(Player.O).x(0).y(0)
 				.previous(Optional.empty()).next(Optional.empty());
 	}
 
-	private @NonNull MoveImpl newFirstMove() {
-		return new MoveImpl(rules, nextMoves, 0, 0);
+	private @NonNull MoveImpl firstMove() {
+		return new MoveImpl(context, 0, 0);
 	}
 
 	@Test
-	void secondMove() {
+	void testSecondMove() {
 		doSecondMove(firstMove -> firstMove.move(1, 1));
 	}
 
 	@Test
-	void secondMoveWithPlayer() {
+	void testSecondMoveWithPlayer() {
 		doSecondMove(firstMove -> firstMove.move(Player.O, 1, 1));
 	}
 
 	private void doSecondMove(@NonNull UnaryOperator<Move> moveCall) {
-		Move firstMove = newFirstMove();
+		Move firstMove = firstMove();
 
 		Move secondMove = Objects.requireNonNull(moveCall.apply(firstMove));
-		nextMoves._next(move -> {
+		context.nextMoves()._next(move -> {
 			if (move == firstMove) {
 				return Optional.of(secondMove);
 			}
@@ -62,24 +69,24 @@ final class MoveImplTest {
 	}
 
 	@Test
-	void illegalPlayerSecondMove() {
-		Move firstMove = newFirstMove();
+	void testIllegalPlayerSecondMove() {
+		Move firstMove = firstMove();
 
 		assertThrows(IllegalArgumentException.class, () -> firstMove.move(Player.X, 1, 1));
 	}
 
 	@Test
-	void occupiedPositionSecondMove() {
-		Move firstMove = newFirstMove();
+	void testOccupiedPositionSecondMove() {
+		Move firstMove = firstMove();
 
 		assertThrows(IllegalArgumentException.class, () -> firstMove.move(0, 0));
 	}
 
 	@Test
-	void outOfBoardPositionSecondMove() {
-		rules = new FakeRules(1, 5);
+	void testOutOfBoardPositionSecondMove() {
+		context._rules(new FakeRules(1, 5));
 
-		Move firstMove = newFirstMove();
+		Move firstMove = firstMove();
 
 		assertThrows(IllegalArgumentException.class, () -> firstMove.move(1, 1));
 		assertThrows(IllegalArgumentException.class, () -> firstMove.move(-1, -1));
@@ -89,34 +96,63 @@ final class MoveImplTest {
 	}
 
 	@Test
-	void drawOnFirstMove() {
-		rules = new FakeRules(1, 5);
+	void testDrawOnFirstMove() {
+		context._rules(new FakeRules(1, 5));
 
-		Move firstMove = newFirstMove();
+		Move firstMove = firstMove();
 
 		new MoveAssert(firstMove).state(GameState.draw);
 	}
 
 	@Test
-	void drawOn3x3() {
-		rules = new FakeRules(3, 5);
+	void testDrawOn3x3() {
+		context._rules(new FakeRules(3, 5));
 
-		Move lastMove = newFirstMove().move(-1, -1).move(-1, 0).move(-1, 1).move(0, -1).move(0, 1).move(1, -1)
+		Move lastMove = firstMove().move(-1, -1).move(-1, 0).move(-1, 1).move(0, -1).move(0, 1).move(1, -1)
 				.move(1, 0).move(1, 1);
 
 		new MoveAssert(lastMove).allPreviousStarted().state(GameState.draw);
 	}
 
 	@Test
-	void forEachPrevious() {
-		Move firstMove = newFirstMove();
+	void testPreviousStream() {
+		Move firstMove = firstMove();
 		Move secondMove = firstMove.move(1, 1);
 		Move thirdMove = secondMove.move(-1, -1);
 
-		List<Move> consumed = new ArrayList<>();
-		thirdMove.forEachPrevious(consumed::add);
+		List<Move> actual = thirdMove.previousStream().collect(toList());
 
-		assertEquals(Arrays.asList(secondMove, firstMove), consumed);
+		assertEquals(Arrays.asList(secondMove, firstMove), actual);
+	}
+
+	@ParameterizedTest
+	@EnumSource(Player.class)
+	void testWinOnFirstMove(@NonNull Player player) {
+		context._rules(new FakeRules(1, 1));
+
+		Move firstMove = firstMove();
+
+		new MoveAssert(firstMove).state(GameState.wonBy(player));
+	}
+
+	@Test
+	void testWinOn3x3() {
+		Move lastMove = win3x3();
+
+		new MoveAssert(lastMove).allPreviousStarted().state(GameState.wonBy(Player.X));
+	}
+
+	private @NonNull Move win3x3() {
+		context._rules(new FakeRules(3, 5));
+
+		return firstMove().move(-1, -1).move(-1, 0).move(-1, 1).move(0, -1);
+	}
+
+	@Test
+	void testGameAlreadyEndedAfterWinOn3x3() {
+		Move lastMove = win3x3();
+
+		assertThrows(IllegalStateException.class, () -> lastMove.move(1, 1));
 	}
 
 }
