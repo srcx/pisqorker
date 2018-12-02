@@ -33,14 +33,8 @@ final class MoveAssert {
 	}
 
 	@NonNull
-	MoveAssert x(int expected) {
-		assertEquals(expected, move.x());
-		return this;
-	}
-
-	@NonNull
-	MoveAssert y(int expected) {
-		assertEquals(expected, move.y());
+	MoveAssert xy(@NonNull Coordinates expected) {
+		assertEquals(expected, move.xy());
 		return this;
 	}
 

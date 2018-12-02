@@ -17,31 +17,29 @@ final class MoveImpl implements Move {
 	private final @NonNull Optional<Move> previous;
 	private final int turn;
 	private final @NonNull Player player;
-	private final int x;
-	private final int y;
+	private final @NonNull Coordinates xy;
 	private final @NonNull GameState state;
 
-	public MoveImpl(@NonNull GameContext context, int x, int y) {
-		this(context, Optional.empty(), Player.defaultFirst(), x, y);
+	public MoveImpl(@NonNull GameContext context, @NonNull Coordinates xy) {
+		this(context, Optional.empty(), Player.defaultFirst(), xy);
 	}
 
-	public MoveImpl(@NonNull GameContext context, @NotNull Player firstPlayer, int x, int y) {
-		this(context, Optional.empty(), firstPlayer, x, y);
+	public MoveImpl(@NonNull GameContext context, @NotNull Player firstPlayer, @NonNull Coordinates xy) {
+		this(context, Optional.empty(), firstPlayer, xy);
 	}
 
-	private MoveImpl(@NonNull GameContext context, @NonNull Optional<Move> previous, int x, int y) {
-		this(context, previous, Player.defaultFirst(), x, y);
+	private MoveImpl(@NonNull GameContext context, @NonNull Optional<Move> previous, @NonNull Coordinates xy) {
+		this(context, previous, Player.defaultFirst(), xy);
 	}
 
-	private MoveImpl(@NonNull GameContext context, @NonNull Optional<Move> previous, @NotNull Player firstPlayer, int x,
-			int y) {
+	private MoveImpl(@NonNull GameContext context, @NonNull Optional<Move> previous, @NotNull Player firstPlayer,
+			@NonNull Coordinates xy) {
 		checkIfValidState(previous);
-		checkIfOutOfBounds(context.rules(), x, y);
-		checkIfOccupied(previous, x, y);
+		checkIfOutOfBounds(context.rules(), xy);
+		checkIfOccupied(previous, xy);
 		this.context = context;
 		this.previous = previous;
-		this.x = x;
-		this.y = y;
+		this.xy = xy;
 		turn = previous().map(Move::turn).map(i -> i + 1).orElse(1);
 		player = Objects.requireNonNull(previous().map(Move::player).map(Player::next).orElse(firstPlayer));
 		state = determineState();
@@ -73,13 +71,9 @@ final class MoveImpl implements Move {
 	}
 
 	@Override
-	public int x() {
-		return x;
-	}
-
-	@Override
-	public int y() {
-		return y;
+	@NonNull
+	public Coordinates xy() {
+		return xy;
 	}
 
 	@Override
@@ -96,18 +90,30 @@ final class MoveImpl implements Move {
 
 	@Override
 	@NonNull
+	public Move move(@NonNull Coordinates xy) {
+		return new MoveImpl(context, Optional.of(this), xy);
+	}
+
+	@Override
+	@NonNull
 	public Move move(int x, int y) {
-		return new MoveImpl(context, Optional.of(this), x, y);
+		return move(Coordinates.of(x, y));
+	}
+
+	@Override
+	@NonNull
+	public Move move(@NonNull Player player, @NonNull Coordinates xy) {
+		if (player != nextPlayer()) {
+			throw new IllegalArgumentException(
+					"Attempting to play as " + player + ", but it is " + nextPlayer() + "'s turn");
+		}
+		return move(xy);
 	}
 
 	@Override
 	@NonNull
 	public Move move(@NonNull Player player, int x, int y) {
-		if (player != nextPlayer()) {
-			throw new IllegalArgumentException(
-					"Attempting to play as " + player + ", but it is " + nextPlayer() + "'s turn");
-		}
-		return move(x, y);
+		return move(player, Coordinates.of(x, y));
 	}
 
 	@Override
@@ -127,17 +133,17 @@ final class MoveImpl implements Move {
 		return player.next();
 	}
 
-	private static void checkIfOccupied(@NonNull Optional<Move> move, int x, int y) {
+	private static void checkIfOccupied(@NonNull Optional<Move> move, @NonNull Coordinates xy) {
 		givenAndPreviousStream(move).forEach(m -> {
-			if (m.x() == x && m.y() == y) {
-				throw new IllegalArgumentException("Position [" + x + ", " + y + "] is already occupied");
+			if (m.xy().equals(xy)) {
+				throw new IllegalArgumentException("Position " + xy + " is already occupied");
 			}
 		});
 	}
 
-	private static void checkIfOutOfBounds(@NonNull Rules rules, int x, int y) {
-		if (!rules.legalCoordinates(x, y)) {
-			throw new IllegalArgumentException("Position [" + x + ", " + y + "] is out of bounds");
+	private static void checkIfOutOfBounds(@NonNull Rules rules, @NonNull Coordinates xy) {
+		if (!rules.legalCoordinates(xy)) {
+			throw new IllegalArgumentException("Position " + xy + " is out of bounds");
 		}
 	}
 

@@ -32,16 +32,16 @@ final class MoveImplTest {
 	void testFirstMove() {
 		Move firstMove = firstMove();
 
-		new MoveAssert(firstMove).turn(1).state(GameState.started).player(Player.X).nextPlayer(Player.O).x(0).y(0)
-				.previous(Optional.empty()).next(Optional.empty());
+		new MoveAssert(firstMove).turn(1).state(GameState.started).player(Player.X).nextPlayer(Player.O)
+				.xy(Coordinates.of(0, 0)).previous(Optional.empty()).next(Optional.empty());
 	}
 
 	private @NonNull MoveImpl firstMove() {
-		return new MoveImpl(context, 0, 0);
+		return new MoveImpl(context, Coordinates.of(0, 0));
 	}
 
 	private @NonNull MoveImpl firstMove(@NotNull Player player) {
-		return new MoveImpl(context, player, 0, 0);
+		return new MoveImpl(context, player, Coordinates.of(0, 0));
 	}
 
 	@Test
@@ -70,8 +70,8 @@ final class MoveImplTest {
 		});
 
 		new MoveAssert(firstMove).next(secondMove);
-		new MoveAssert(secondMove).turn(2).state(GameState.started).player(Player.O).nextPlayer(Player.X).x(1).y(1)
-				.previous(firstMove).next(Optional.empty());
+		new MoveAssert(secondMove).turn(2).state(GameState.started).player(Player.O).nextPlayer(Player.X)
+				.xy(Coordinates.of(1, 1)).previous(firstMove).next(Optional.empty());
 	}
 
 	@Test
@@ -153,7 +153,7 @@ final class MoveImplTest {
 		context._rules(new FakeRules(3, 3));
 		context._winConditionChecker(move -> move.turn() == 5);
 
-		return firstMove().move(-1, -1).move(-1, 0).move(-1, 1).move(0, -1);
+		return firstMove().move(-1, -1).move(-1, 0).move(-1, 1).move(1, 0);
 	}
 
 	@Test

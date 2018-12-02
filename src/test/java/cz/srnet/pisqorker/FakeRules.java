@@ -1,5 +1,7 @@
 package cz.srnet.pisqorker;
 
+import org.springframework.lang.NonNull;
+
 final class FakeRules implements Rules {
 
 	private final int boardSize;
@@ -21,9 +23,9 @@ final class FakeRules implements Rules {
 	}
 
 	@Override
-	public boolean legalCoordinates(int x, int y) {
+	public boolean legalCoordinates(@NonNull Coordinates xy) {
 		int boundary = (boardSize - 1) / 2;
-		return x >= -boundary && x <= boundary && y >= -boundary && y <= boundary;
+		return xy.isIn(-boundary, boundary, -boundary, boundary);
 	}
 
 }

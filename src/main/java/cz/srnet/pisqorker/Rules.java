@@ -1,5 +1,7 @@
 package cz.srnet.pisqorker;
 
+import org.springframework.lang.NonNull;
+
 public interface Rules {
 
 	/**
@@ -8,7 +10,7 @@ public interface Rules {
 	 */
 	int boardSize();
 
-	boolean legalCoordinates(int x, int y);
+	boolean legalCoordinates(@NonNull Coordinates xy);
 
 	int connectToWin();
 
