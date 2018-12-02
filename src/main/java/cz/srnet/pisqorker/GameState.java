@@ -6,6 +6,10 @@ public enum GameState {
 
 	notStarted, started, draw, wonByX, wonByO;
 
+	boolean isEndState() {
+		return this != notStarted && this != started;
+	}
+
 	static @NonNull GameState wonBy(@NonNull Player player) {
 		switch (player) {
 		case O:

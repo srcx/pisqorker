@@ -9,7 +9,6 @@ final class FakeGameContext implements GameContext {
 
 		@Override
 		public boolean isWon(@NonNull Move move) {
-			// TODO Auto-generated method stub
 			return false;
 		}
 	};

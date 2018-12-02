@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
+import javax.validation.constraints.NotNull;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,6 +38,10 @@ final class MoveImplTest {
 
 	private @NonNull MoveImpl firstMove() {
 		return new MoveImpl(context, 0, 0);
+	}
+
+	private @NonNull MoveImpl firstMove(@NotNull Player player) {
+		return new MoveImpl(context, player, 0, 0);
 	}
 
 	@Test
@@ -84,15 +90,15 @@ final class MoveImplTest {
 
 	@Test
 	void testOutOfBoardPositionSecondMove() {
-		context._rules(new FakeRules(1, 5));
+		context._rules(new FakeRules(2, 5));
 
 		Move firstMove = firstMove();
 
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move(1, 1));
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move(-1, -1));
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move(1, -1));
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move(-1, 1));
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move(2, 2));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(3, 3));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(-3, -3));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(3, -3));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(-3, 3));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move(4, 4));
 	}
 
 	@Test
@@ -108,8 +114,8 @@ final class MoveImplTest {
 	void testDrawOn3x3() {
 		context._rules(new FakeRules(3, 5));
 
-		Move lastMove = firstMove().move(-1, -1).move(-1, 0).move(-1, 1).move(0, -1).move(0, 1).move(1, -1)
-				.move(1, 0).move(1, 1);
+		Move lastMove = firstMove().move(-1, -1).move(-1, 0).move(-1, 1).move(0, -1).move(0, 1).move(1, -1).move(1, 0)
+				.move(1, 1);
 
 		new MoveAssert(lastMove).allPreviousStarted().state(GameState.draw);
 	}
@@ -129,8 +135,9 @@ final class MoveImplTest {
 	@EnumSource(Player.class)
 	void testWinOnFirstMove(@NonNull Player player) {
 		context._rules(new FakeRules(1, 1));
+		context._winConditionChecker(whatever -> true);
 
-		Move firstMove = firstMove();
+		Move firstMove = firstMove(player);
 
 		new MoveAssert(firstMove).state(GameState.wonBy(player));
 	}
@@ -143,7 +150,8 @@ final class MoveImplTest {
 	}
 
 	private @NonNull Move win3x3() {
-		context._rules(new FakeRules(3, 5));
+		context._rules(new FakeRules(3, 3));
+		context._winConditionChecker(move -> move.turn() == 5);
 
 		return firstMove().move(-1, -1).move(-1, 0).move(-1, 1).move(0, -1);
 	}

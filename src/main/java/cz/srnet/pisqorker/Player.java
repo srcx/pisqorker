@@ -21,4 +21,8 @@ public enum Player {
 
 	abstract @NonNull Player next();
 
+	static @NonNull Player defaultFirst() {
+		return X;
+	}
+
 }

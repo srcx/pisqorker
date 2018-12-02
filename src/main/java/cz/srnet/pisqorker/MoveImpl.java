@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.lang.NonNull;
 
 final class MoveImpl implements Move {
@@ -20,10 +22,20 @@ final class MoveImpl implements Move {
 	private final @NonNull GameState state;
 
 	public MoveImpl(@NonNull GameContext context, int x, int y) {
-		this(context, Optional.empty(), x, y);
+		this(context, Optional.empty(), Player.defaultFirst(), x, y);
+	}
+
+	public MoveImpl(@NonNull GameContext context, @NotNull Player firstPlayer, int x, int y) {
+		this(context, Optional.empty(), firstPlayer, x, y);
 	}
 
 	private MoveImpl(@NonNull GameContext context, @NonNull Optional<Move> previous, int x, int y) {
+		this(context, previous, Player.defaultFirst(), x, y);
+	}
+
+	private MoveImpl(@NonNull GameContext context, @NonNull Optional<Move> previous, @NotNull Player firstPlayer, int x,
+			int y) {
+		checkIfValidState(previous);
 		checkIfOutOfBounds(context.rules(), x, y);
 		checkIfOccupied(previous, x, y);
 		this.context = context;
@@ -31,7 +43,7 @@ final class MoveImpl implements Move {
 		this.x = x;
 		this.y = y;
 		turn = previous().map(Move::turn).map(i -> i + 1).orElse(1);
-		player = Objects.requireNonNull(previous().map(Move::player).map(Player::next).orElse(Player.X));
+		player = Objects.requireNonNull(previous().map(Move::player).map(Player::next).orElse(firstPlayer));
 		state = determineState();
 	}
 
@@ -42,11 +54,11 @@ final class MoveImpl implements Move {
 	}
 
 	private @NonNull GameState determineState() {
-		if (isDraw()) {
-			return GameState.draw;
-		}
 		if (isWon()) {
 			return GameState.wonBy(player);
+		}
+		if (isDraw()) {
+			return GameState.draw;
 		}
 		return GameState.started;
 	}
@@ -126,6 +138,12 @@ final class MoveImpl implements Move {
 	private static void checkIfOutOfBounds(@NonNull Rules rules, int x, int y) {
 		if (!rules.legalCoordinates(x, y)) {
 			throw new IllegalArgumentException("Position [" + x + ", " + y + "] is out of bounds");
+		}
+	}
+
+	private static void checkIfValidState(@NonNull Optional<Move> previous) {
+		if (previous.map(Move::state).map(GameState::isEndState).orElse(false)) {
+			throw new IllegalStateException("Game has already ended");
 		}
 	}
 
