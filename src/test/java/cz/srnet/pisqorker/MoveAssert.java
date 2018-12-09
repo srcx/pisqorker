@@ -71,12 +71,6 @@ final class MoveAssert {
 	}
 
 	@NonNull
-	MoveAssert nextPlayer(@NonNull Player expected) {
-		assertEquals(expected, move.nextPlayer());
-		return this;
-	}
-
-	@NonNull
 	MoveAssert allPreviousStarted() {
 		move.previousStream().forEach(m -> assertEquals(GameState.started, m.state()));
 		return this;

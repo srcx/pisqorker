@@ -13,35 +13,30 @@ import org.springframework.lang.NonNull;
 
 final class MoveImpl implements Move {
 
+	private static final @NonNull Player firstPlayer = Player.defaultFirst();
+
 	private final @NonNull GameContext context;
-	private final @NonNull Optional<Move> previous;
+	private final @NonNull MovesRepository movesRepository;
 	private final int turn;
 	private final @NonNull Player player;
 	private final @NonNull Coordinates xy;
 	private final @NonNull GameState state;
 
-	public MoveImpl(@NonNull GameContext context, @NonNull Coordinates xy) {
-		this(context, Optional.empty(), Player.defaultFirst(), xy);
+	MoveImpl(@NonNull GameContext context, @NonNull MovesRepository movesRepository, @NonNull Coordinates xy) {
+		this(context, movesRepository, firstPlayer, xy);
 	}
 
-	public MoveImpl(@NonNull GameContext context, @NotNull Player firstPlayer, @NonNull Coordinates xy) {
-		this(context, Optional.empty(), firstPlayer, xy);
-	}
-
-	private MoveImpl(@NonNull GameContext context, @NonNull Optional<Move> previous, @NonNull Coordinates xy) {
-		this(context, previous, Player.defaultFirst(), xy);
-	}
-
-	private MoveImpl(@NonNull GameContext context, @NonNull Optional<Move> previous, @NotNull Player firstPlayer,
+	MoveImpl(@NonNull GameContext context, @NonNull MovesRepository movesRepository, @NotNull Player firstPlayer,
 			@NonNull Coordinates xy) {
+		Optional<Move> previous = movesRepository.lastMove();
 		checkIfValidState(previous);
 		checkIfOutOfBounds(context.rules(), xy);
 		checkIfOccupied(previous, xy);
 		this.context = context;
-		this.previous = previous;
+		this.movesRepository = movesRepository;
 		this.xy = xy;
-		turn = previous().map(Move::turn).map(i -> i + 1).orElse(1);
-		player = Objects.requireNonNull(previous().map(Move::player).map(Player::next).orElse(firstPlayer));
+		turn = previous.map(Move::turn).map(i -> i + 1).orElse(1);
+		player = Objects.requireNonNull(previous.map(Move::player).map(Player::next).orElse(firstPlayer));
 		state = determineState();
 	}
 
@@ -79,41 +74,13 @@ final class MoveImpl implements Move {
 	@Override
 	@NonNull
 	public Optional<Move> previous() {
-		return previous;
+		return movesRepository.previousMove(this);
 	}
 
 	@Override
 	@NonNull
 	public Optional<Move> next() {
-		return context.nextMoves().next(this);
-	}
-
-	@Override
-	@NonNull
-	public Move move(@NonNull Coordinates xy) {
-		return new MoveImpl(context, Optional.of(this), xy);
-	}
-
-	@Override
-	@NonNull
-	public Move move(int x, int y) {
-		return move(Coordinates.of(x, y));
-	}
-
-	@Override
-	@NonNull
-	public Move move(@NonNull Player player, @NonNull Coordinates xy) {
-		if (player != nextPlayer()) {
-			throw new IllegalArgumentException(
-					"Attempting to play as " + player + ", but it is " + nextPlayer() + "'s turn");
-		}
-		return move(xy);
-	}
-
-	@Override
-	@NonNull
-	public Move move(@NonNull Player player, int x, int y) {
-		return move(player, Coordinates.of(x, y));
+		return movesRepository.nextMove(this);
 	}
 
 	@Override
@@ -125,12 +92,6 @@ final class MoveImpl implements Move {
 	@NonNull
 	public Player player() {
 		return player;
-	}
-
-	@Override
-	@NonNull
-	public Player nextPlayer() {
-		return player.next();
 	}
 
 	private static void checkIfOccupied(@NonNull Optional<Move> move, @NonNull Coordinates xy) {
@@ -197,6 +158,12 @@ final class MoveImpl implements Move {
 			return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED
 					| Spliterator.SIZED | Spliterator.SUBSIZED;
 		}
+	}
+
+	@Override
+	@NonNull
+	public MakeMove move() {
+		return movesRepository.move();
 	}
 
 }

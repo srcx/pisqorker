@@ -57,38 +57,14 @@ final class FakeMove implements Move {
 
 	@Override
 	@NonNull
-	public Move move(@NonNull Coordinates xy) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	@NonNull
-	public Move move(int x, int y) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	@NonNull
-	public Player nextPlayer() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	@NonNull
-	public Move move(@NonNull Player player, @NonNull Coordinates xy) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	@NonNull
-	public Move move(@NonNull Player player, int x, int y) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	@NonNull
 	public Stream<Move> previousStream() {
 		return Objects.requireNonNull(previousStreamSupplier.get());
+	}
+
+	@Override
+	@NonNull
+	public MakeMove move() {
+		throw new UnsupportedOperationException();
 	}
 
 }

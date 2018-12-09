@@ -16,9 +16,6 @@ public interface Moves {
 	Player nextPlayer();
 
 	@NonNull
-	Move move(int x, int y);
-
-	@NonNull
-	Move move(@NonNull Player player, int x, int y);
+	MakeMove move();
 
 }

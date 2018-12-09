@@ -10,7 +10,4 @@ interface GameContext {
 	@NonNull
 	WinConditionChecker winConditionChecker();
 
-	@NonNull
-	NextMoves nextMoves();
-
 }

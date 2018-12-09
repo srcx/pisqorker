@@ -12,8 +12,6 @@ final class FakeGameContext implements GameContext {
 			return false;
 		}
 	};
-	private @NonNull FakeNextMoves nextMoves = new FakeNextMoves();
-
 	@NonNull
 	FakeGameContext _rules(@NonNull Rules rules) {
 		this.rules = rules;
@@ -36,12 +34,6 @@ final class FakeGameContext implements GameContext {
 	@NonNull
 	public WinConditionChecker winConditionChecker() {
 		return winConditionChecker;
-	}
-
-	@Override
-	@NonNull
-	public FakeNextMoves nextMoves() {
-		return nextMoves;
 	}
 
 }

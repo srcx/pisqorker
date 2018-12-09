@@ -25,21 +25,9 @@ public interface Move {
 	Optional<Move> next();
 
 	@NonNull
-	Move move(@NonNull Coordinates xy);
-
-	@NonNull
-	Move move(int x, int y);
-
-	@NonNull
-	Player nextPlayer();
-
-	@NonNull
-	Move move(@NonNull Player player, @NonNull Coordinates xy);
-
-	@NonNull
-	Move move(@NonNull Player player, int x, int y);
-
-	@NonNull
 	Stream<Move> previousStream();
+
+	@NonNull
+	MakeMove move();
 
 }
