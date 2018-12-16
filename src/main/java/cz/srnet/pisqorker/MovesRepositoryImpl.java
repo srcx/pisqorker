@@ -2,6 +2,7 @@ package cz.srnet.pisqorker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -26,7 +27,7 @@ final class MovesRepositoryImpl implements MovesRepository {
 	public Player nextPlayer() {
 		try {
 			movesLock.readLock().lock();
-			return moves.isEmpty() ? firstPlayer : moves.get(0).player().next();
+			return moves.isEmpty() ? firstPlayer : lastMoveNoLockNotNull().player().next();
 		} finally {
 			movesLock.readLock().unlock();
 		}
@@ -37,10 +38,14 @@ final class MovesRepositoryImpl implements MovesRepository {
 	public Optional<Move> firstMove() {
 		try {
 			movesLock.readLock().lock();
-			return moves.isEmpty() ? Optional.empty() : Optional.of(moves.get(0));
+			return moves.isEmpty() ? Optional.empty() : Optional.of(firstMoveNoLockNotNull());
 		} finally {
 			movesLock.readLock().unlock();
 		}
+	}
+
+	private @NonNull Move firstMoveNoLockNotNull() {
+		return Objects.requireNonNull(moves.get(0));
 	}
 
 	@Override
@@ -48,10 +53,14 @@ final class MovesRepositoryImpl implements MovesRepository {
 	public Optional<Move> lastMove() {
 		try {
 			movesLock.readLock().lock();
-			return moves.isEmpty() ? Optional.empty() : Optional.of(moves.get(moves.size() - 1));
+			return moves.isEmpty() ? Optional.empty() : Optional.of(lastMoveNoLockNotNull());
 		} finally {
 			movesLock.readLock().unlock();
 		}
+	}
+
+	private @NonNull Move lastMoveNoLockNotNull() {
+		return Objects.requireNonNull(moves.get(moves.size() - 1));
 	}
 
 	@Override
@@ -69,7 +78,7 @@ final class MovesRepositoryImpl implements MovesRepository {
 	private @NonNull Optional<Move> moveAtTurn(int turn) {
 		try {
 			movesLock.readLock().lock();
-			if (turn > 1 && turn <= moves.size()) {
+			if (turn >= 1 && turn <= moves.size()) {
 				return Optional.of(moves.get(turn - 1));
 			}
 			return Optional.empty();

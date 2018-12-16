@@ -10,8 +10,11 @@ public interface Rules {
 	 */
 	int boardSize();
 
-	boolean legalCoordinates(@NonNull Coordinates xy);
-
 	int connectToWin();
+
+	default boolean legalCoordinates(@NonNull Coordinates xy) {
+		int boundary = (boardSize() - 1) / 2;
+		return xy.isIn(-boundary, boundary, -boundary, boundary);
+	}
 
 }

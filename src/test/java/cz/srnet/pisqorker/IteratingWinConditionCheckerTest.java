@@ -16,30 +16,31 @@ final class IteratingWinConditionCheckerTest {
 	@ParameterizedTest
 	@EnumSource(Player.class)
 	void testWinOnFirstMove(@NonNull Player player) {
-		FakeGameContext context = new FakeGameContext()._rules(new FakeRules(1, 1));
+		FakeRules rules = new FakeRules(1, 1);
 		FakeMove move = move(player, 0, 0, Collections.emptyList());
 
-		assertTrue(new IteratingWinConditionChecker(context).isWon(move));
+		assertTrue(new IteratingWinConditionChecker(rules).isWon(move));
 	}
 
 	private @NonNull FakeMove move(@NonNull Player player, int x, int y, @NonNull List<Move> previous) {
-		return new FakeMove(player, Coordinates.of(x, y), () -> previous.stream());
+		return new FakeMove()._player(player)._xy(Coordinates.of(x, y))
+				._previousStreamSupplier(() -> previous.stream());
 	}
 
 	@ParameterizedTest
 	@EnumSource(Player.class)
 	void testNoWinOnFirstMove(@NonNull Player player) {
-		FakeGameContext context = new FakeGameContext()._rules(new FakeRules(2, 2));
+		FakeRules rules = new FakeRules(2, 2);
 		FakeMove move = move(player, 0, 0, Collections.emptyList());
 
-		assertFalse(new IteratingWinConditionChecker(context).isWon(move));
+		assertFalse(new IteratingWinConditionChecker(rules).isWon(move));
 	}
 
 	@ParameterizedTest
 	@EnumSource(Player.class)
-	void testWinOn3x3(@NonNull Player player) {
-		FakeGameContext context = new FakeGameContext()._rules(new FakeRules(3, 3));
-		IteratingWinConditionChecker impl = new IteratingWinConditionChecker(context);
+	void testWinOn3x3Variant1(@NonNull Player player) {
+		FakeRules rules = new FakeRules(3, 3);
+		IteratingWinConditionChecker impl = new IteratingWinConditionChecker(rules);
 		List<Move> moves = new ArrayList<>();
 		moves.add(assertNoWin(impl, move(player, 0, 0, moves)));
 		moves.add(assertNoWin(impl, move(player.next(), -1, -1, moves)));
@@ -47,6 +48,20 @@ final class IteratingWinConditionCheckerTest {
 		moves.add(assertNoWin(impl, move(player.next(), -1, 1, moves)));
 
 		assertTrue(impl.isWon(move(player, 1, 0, moves)));
+	}
+
+	@ParameterizedTest
+	@EnumSource(Player.class)
+	void testWinOn3x3Variant2(@NonNull Player player) {
+		FakeRules rules = new FakeRules(3, 3);
+		IteratingWinConditionChecker impl = new IteratingWinConditionChecker(rules);
+		List<Move> moves = new ArrayList<>();
+		moves.add(assertNoWin(impl, move(player, 0, 0, moves)));
+		moves.add(assertNoWin(impl, move(player.next(), -1, -1, moves)));
+		moves.add(assertNoWin(impl, move(player, 0, 1, moves)));
+		moves.add(assertNoWin(impl, move(player.next(), 1, 1, moves)));
+
+		assertTrue(impl.isWon(move(player, 0, -1, moves)));
 	}
 
 	private @NonNull FakeMove assertNoWin(@NonNull IteratingWinConditionChecker impl, @NonNull FakeMove move) {

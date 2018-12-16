@@ -63,7 +63,28 @@ final class MovesRepositoryImplTest {
 		assertEquals(Coordinates.of(0, 0), first.xy());
 		assertEquals(first, impl.firstMove().get());
 		assertEquals(first, impl.lastMove().get());
+		assertFalse(first.previous().isPresent());
+		assertEquals(0, first.previousStream().count());
 		assertEquals(Player.defaultFirst().next(), impl.nextPlayer());
+	}
+
+	@Test
+	void testTwoMoves() {
+		FakeGameContext context = new FakeGameContext();
+
+		Moves impl = new MovesRepositoryImpl(context);
+		Move first = impl.move().to(0, 0);
+		Move second = impl.move().to(1, 1);
+
+		assertEquals(Coordinates.of(0, 0), first.xy());
+		assertEquals(Coordinates.of(1, 1), second.xy());
+		assertEquals(first, impl.firstMove().get());
+		assertFalse(first.previous().isPresent());
+		assertEquals(0, first.previousStream().count());
+		assertEquals(second, impl.lastMove().get());
+		assertEquals(first, second.previous().get());
+		assertEquals(1, second.previousStream().count());
+		assertEquals(Player.defaultFirst(), impl.nextPlayer());
 	}
 
 }

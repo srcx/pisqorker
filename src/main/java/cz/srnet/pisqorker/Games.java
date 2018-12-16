@@ -5,6 +5,6 @@ import org.springframework.lang.NonNull;
 public interface Games {
 
 	@NonNull
-	Game newGame();
+	Game newGame(@NonNull Rules rules);
 
 }

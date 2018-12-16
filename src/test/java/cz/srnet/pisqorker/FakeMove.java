@@ -9,15 +9,29 @@ import org.springframework.lang.NonNull;
 
 final class FakeMove implements Move {
 
-	private final @NonNull Player player;
-	private final @NonNull Coordinates xy;
-	private final @NonNull Supplier<Stream<Move>> previousStreamSupplier;
+	private @NonNull Optional<Player> player = Optional.empty();
+	private @NonNull Optional<Coordinates> xy = Optional.empty();
+	private @NonNull Optional<Supplier<Stream<Move>>> previousStreamSupplier = Optional.empty();
+	private @NonNull Optional<GameState> state = Optional.empty();
 
-	public FakeMove(@NonNull Player player, @NonNull Coordinates xy,
-			@NonNull Supplier<Stream<Move>> previousStreamSupplier) {
-		this.player = player;
-		this.xy = xy;
-		this.previousStreamSupplier = previousStreamSupplier;
+	public @NonNull FakeMove _player(@NonNull Player player) {
+		this.player = Optional.of(player);
+		return this;
+	}
+
+	public @NonNull FakeMove _xy(@NonNull Coordinates xy) {
+		this.xy = Optional.of(xy);
+		return this;
+	}
+
+	public @NonNull FakeMove _previousStreamSupplier(@NonNull Supplier<Stream<Move>> previousStreamSupplier) {
+		this.previousStreamSupplier = Optional.of(previousStreamSupplier);
+		return this;
+	}
+
+	public @NonNull FakeMove _state(@NonNull GameState state) {
+		this.state = Optional.of(state);
+		return this;
 	}
 
 	@Override
@@ -28,19 +42,19 @@ final class FakeMove implements Move {
 	@Override
 	@NonNull
 	public GameState state() {
-		throw new UnsupportedOperationException();
+		return Objects.requireNonNull(state.orElseThrow(() -> new UnsupportedOperationException()));
 	}
 
 	@Override
 	@NonNull
 	public Player player() {
-		return player;
+		return Objects.requireNonNull(player.orElseThrow(() -> new UnsupportedOperationException()));
 	}
 
 	@Override
 	@NonNull
 	public Coordinates xy() {
-		return xy;
+		return Objects.requireNonNull(xy.orElseThrow(() -> new UnsupportedOperationException()));
 	}
 
 	@Override
@@ -58,7 +72,8 @@ final class FakeMove implements Move {
 	@Override
 	@NonNull
 	public Stream<Move> previousStream() {
-		return Objects.requireNonNull(previousStreamSupplier.get());
+		return Objects
+				.requireNonNull(previousStreamSupplier.orElseThrow(() -> new UnsupportedOperationException()).get());
 	}
 
 	@Override

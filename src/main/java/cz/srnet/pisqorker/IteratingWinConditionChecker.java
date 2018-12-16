@@ -10,10 +10,10 @@ import org.springframework.lang.Nullable;
 
 final class IteratingWinConditionChecker implements WinConditionChecker {
 
-	private final @NotNull GameContext context;
+	private final @NotNull Rules rules;
 
-	public IteratingWinConditionChecker(@NotNull GameContext context) {
-		this.context = context;
+	public IteratingWinConditionChecker(@NotNull Rules rules) {
+		this.rules = rules;
 	}
 
 	@Override
@@ -36,7 +36,7 @@ final class IteratingWinConditionChecker implements WinConditionChecker {
 	private boolean winning(@NonNull Move lastMove, @NonNull UnaryOperator<Coordinates> direction1,
 			@NonNull UnaryOperator<Coordinates> direction2) {
 		int connected = countWinning(lastMove, direction1) + 1 + countWinning(lastMove, direction2);
-		return connected >= context.rules().connectToWin();
+		return connected >= rules.connectToWin();
 	}
 
 	private int countWinning(@NonNull Move lastMove, @NonNull UnaryOperator<Coordinates> direction) {
