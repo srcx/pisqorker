@@ -3,9 +3,9 @@ package cz.srnet.pisqorker;
 import org.springframework.lang.NonNull;
 
 @FunctionalInterface
-interface WinConditionCheckerFactory {
+interface WinConditionCheckers {
 
 	@NonNull
-	WinConditionChecker create(@NonNull Rules rules);
+	WinConditionChecker forRules(@NonNull Rules rules);
 
 }

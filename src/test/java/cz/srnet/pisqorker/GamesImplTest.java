@@ -8,10 +8,10 @@ final class GamesImplTest {
 
 	@Test
 	void testNewGame() {
-		WinConditionCheckerFactory winConditionCheckerFactory = (rules) -> (move) -> true;
+		WinConditionCheckers winConditionCheckers = (rules) -> (move) -> true;
 		FakeRules rules = new FakeRules(3, 3);
 
-		Games impl = new GamesImpl(winConditionCheckerFactory);
+		Games impl = new GamesImpl(winConditionCheckers);
 		Game game = impl.newGame(rules);
 
 		assertEquals(GameState.notStarted, game.state());

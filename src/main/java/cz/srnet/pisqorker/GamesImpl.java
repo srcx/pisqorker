@@ -4,10 +4,10 @@ import org.springframework.lang.NonNull;
 
 final class GamesImpl implements Games {
 
-	private final @NonNull WinConditionCheckerFactory winConditionCheckerFactory;
+	private final @NonNull WinConditionCheckers winConditionCheckers;
 
-	public GamesImpl(@NonNull WinConditionCheckerFactory winConditionCheckerFactory) {
-		this.winConditionCheckerFactory = winConditionCheckerFactory;
+	public GamesImpl(@NonNull WinConditionCheckers winConditionCheckers) {
+		this.winConditionCheckers = winConditionCheckers;
 	}
 
 	@Override
@@ -18,7 +18,7 @@ final class GamesImpl implements Games {
 			@Override
 			@NonNull
 			public WinConditionChecker winConditionChecker() {
-				return winConditionCheckerFactory.create(rules);
+				return winConditionCheckers.forRules(rules);
 			}
 
 			@Override

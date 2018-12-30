@@ -9,10 +9,10 @@ final class GamesImplIntegrationTest {
 
 	@Test
 	void test3x3Draw() {
-		WinConditionCheckerFactory winConditionCheckerFactory = IteratingWinConditionChecker::new;
+		WinConditionCheckers winConditionCheckers = IteratingWinConditionChecker::new;
 		Rules rules = new RulesImpl(3, 3);
 
-		Games impl = new GamesImpl(winConditionCheckerFactory);
+		Games impl = new GamesImpl(winConditionCheckers);
 		Game game = impl.newGame(rules);
 
 		assertEquals(GameState.notStarted, game.state());
@@ -29,10 +29,10 @@ final class GamesImplIntegrationTest {
 
 	@Test
 	void test3x3WonByX() {
-		WinConditionCheckerFactory winConditionCheckerFactory = IteratingWinConditionChecker::new;
+		WinConditionCheckers winConditionCheckers = IteratingWinConditionChecker::new;
 		Rules rules = new RulesImpl(3, 3);
 
-		Games impl = new GamesImpl(winConditionCheckerFactory);
+		Games impl = new GamesImpl(winConditionCheckers);
 		Game game = impl.newGame(rules);
 
 		assertEquals(GameState.notStarted, game.state());
