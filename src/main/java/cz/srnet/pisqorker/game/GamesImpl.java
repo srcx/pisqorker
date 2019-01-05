@@ -1,7 +1,9 @@
 package cz.srnet.pisqorker.game;
 
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
 
+@Service
 final class GamesImpl implements Games {
 
 	private final @NonNull WinConditionCheckers winConditionCheckers;

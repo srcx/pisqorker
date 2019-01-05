@@ -5,7 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("cz.srnet.pisqorker.spring")
+@ComponentScan("cz.srnet.pisqorker.game")
+@ComponentScan("cz.srnet.pisqorker.rest")
 public class PisqorkerServer {
 
 	public static void main(String[] args) {

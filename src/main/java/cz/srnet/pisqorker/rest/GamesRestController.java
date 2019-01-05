@@ -1,4 +1,4 @@
-package cz.srnet.pisqorker.spring;
+package cz.srnet.pisqorker.rest;
 
 import java.util.Objects;
 
@@ -20,7 +20,7 @@ final class GamesRestController {
 		this.games = games;
 	}
 
-	@PostMapping("/games")
+	@PostMapping(RestApiVersions.v1 + "/games")
 	public @NonNull Game newGame(@RequestBody Rules rules) {
 		return games.newGame(Objects.requireNonNull(rules));
 	}

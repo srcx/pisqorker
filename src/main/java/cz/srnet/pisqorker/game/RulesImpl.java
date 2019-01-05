@@ -1,5 +1,7 @@
 package cz.srnet.pisqorker.game;
 
+import org.springframework.lang.NonNull;
+
 final class RulesImpl implements Rules {
 
 	private final int boardSize;
@@ -18,6 +20,12 @@ final class RulesImpl implements Rules {
 	@Override
 	public int connectToWin() {
 		return connectToWin;
+	}
+
+	@Override
+	@NonNull
+	public TransferableRules transferOut() {
+		return new TransferableRules(boardSize, connectToWin);
 	}
 
 }

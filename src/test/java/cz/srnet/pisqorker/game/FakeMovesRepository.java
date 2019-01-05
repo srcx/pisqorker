@@ -9,14 +9,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-
-import cz.srnet.pisqorker.game.MakeMove;
-import cz.srnet.pisqorker.game.Move;
-import cz.srnet.pisqorker.game.MovesRepository;
-import cz.srnet.pisqorker.game.Player;
 
 final class FakeMovesRepository implements MovesRepository {
 
@@ -94,6 +90,12 @@ final class FakeMovesRepository implements MovesRepository {
 	public MakeMove move() {
 		return Objects.requireNonNull(
 				lastMove().map(moveWithPreviousFunction).orElseThrow(() -> new UnsupportedOperationException()));
+	}
+
+	@Override
+	@NonNull
+	public Stream<Move> stream() {
+		return Objects.requireNonNull(new ArrayList<>(moves).stream());
 	}
 
 }

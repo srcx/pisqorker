@@ -1,6 +1,6 @@
 package cz.srnet.pisqorker.game;
 
-import cz.srnet.pisqorker.game.Rules;
+import org.springframework.lang.NonNull;
 
 final class FakeRules implements Rules {
 
@@ -20,6 +20,12 @@ final class FakeRules implements Rules {
 	@Override
 	public int connectToWin() {
 		return connectToWin;
+	}
+
+	@Override
+	@NonNull
+	public TransferableRules transferOut() {
+		throw new UnsupportedOperationException();
 	}
 
 }

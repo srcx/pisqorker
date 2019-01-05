@@ -1,4 +1,4 @@
-package cz.srnet.pisqorker.game.transfer;
+package cz.srnet.pisqorker.rest;
 
 import org.springframework.lang.NonNull;
 

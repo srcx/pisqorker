@@ -2,12 +2,21 @@ package cz.srnet.pisqorker.game;
 
 import org.springframework.lang.NonNull;
 
-import cz.srnet.pisqorker.game.transfer.TransferableIn;
+import cz.srnet.pisqorker.rest.TransferableIn;
 
 public final class TransferableRules implements TransferableIn<Rules> {
 
 	private int boardSize;
 	private int connectToWin;
+
+	public TransferableRules() {
+		// for jackson
+	}
+
+	public TransferableRules(int boardSize, int connectToWin) {
+		this.boardSize = boardSize;
+		this.connectToWin = connectToWin;
+	}
 
 	public int getBoardSize() {
 		return boardSize;

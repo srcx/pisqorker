@@ -2,7 +2,9 @@ package cz.srnet.pisqorker.game;
 
 import org.springframework.lang.NonNull;
 
-public interface Rules {
+import cz.srnet.pisqorker.rest.TransferableOut;
+
+public interface Rules extends TransferableOut<TransferableRules> {
 
 	/**
 	 * @return board size, always odd, both X and Y coordinates are inside

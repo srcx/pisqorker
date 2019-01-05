@@ -8,17 +8,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.lang.NonNull;
 
-import cz.srnet.pisqorker.game.Game;
-import cz.srnet.pisqorker.game.GameImpl;
-import cz.srnet.pisqorker.game.GameState;
-
 final class GameImplTest {
 
 	@Test
 	void testMoves() {
+		FakeGameContext context = new FakeGameContext();
 		FakeMovesRepository moves = new FakeMovesRepository();
 
-		Game impl = new GameImpl(moves);
+		Game impl = new GameImpl(context, moves);
 
 		assertSame(moves, impl.moves());
 	}
@@ -26,6 +23,7 @@ final class GameImplTest {
 	@ParameterizedTest
 	@EnumSource(GameState.class)
 	void testState(@NonNull GameState state) {
+		FakeGameContext context = new FakeGameContext();
 		FakeMove firstMove = new FakeMove();
 		FakeMove lastMove = new FakeMove()._state(state);
 		FakeMovesRepository moves = new FakeMovesRepository();
@@ -33,7 +31,7 @@ final class GameImplTest {
 			moves._firstMove(firstMove)._addMove(lastMove);
 		}
 
-		Game impl = new GameImpl(moves);
+		Game impl = new GameImpl(context, moves);
 
 		assertEquals(state, impl.state());
 	}
