@@ -11,12 +11,14 @@ import org.springframework.lang.NonNull;
 final class GameImplTest {
 
 	@Test
-	void testMoves() {
+	void testIdAndMoves() {
+		String id = "id";
 		FakeGameContext context = new FakeGameContext();
 		FakeMovesRepository moves = new FakeMovesRepository();
 
-		Game impl = new GameImpl(context, moves);
+		Game impl = new GameImpl(id, context, moves);
 
+		assertEquals(id, impl.id());
 		assertSame(moves, impl.moves());
 	}
 
@@ -31,7 +33,7 @@ final class GameImplTest {
 			moves._firstMove(firstMove)._addMove(lastMove);
 		}
 
-		Game impl = new GameImpl(context, moves);
+		Game impl = new GameImpl("id", context, moves);
 
 		assertEquals(state, impl.state());
 	}

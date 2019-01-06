@@ -7,12 +7,20 @@ import org.springframework.lang.NonNull;
 
 final class GameImpl implements Game {
 
+	private final @NonNull String id;
 	private final @NonNull GameContext context;
 	private final @NonNull MovesRepository moves;
 
-	public GameImpl(@NonNull GameContext context, @NonNull MovesRepository moves) {
+	public GameImpl(@NonNull String id, @NonNull GameContext context, @NonNull MovesRepository moves) {
+		this.id = id;
 		this.context = context;
 		this.moves = moves;
+	}
+
+	@Override
+	@NonNull
+	public String id() {
+		return id;
 	}
 
 	@Override
@@ -31,6 +39,7 @@ final class GameImpl implements Game {
 	@NonNull
 	public TransferableGame transferOut() {
 		TransferableGame out = new TransferableGame();
+		out.setId(id());
 		out.setRules(context.rules());
 		out.setState(state());
 		out.setMoves(moves.stream().map(Move::xy).collect(Collectors.toList()));

@@ -4,9 +4,18 @@ import java.util.List;
 
 public final class TransferableGame {
 
+	private String id;
 	private Rules rules;
 	private GameState state;
 	private List<Coordinates> moves;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public Rules getRules() {
 		return rules;
