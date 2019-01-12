@@ -17,13 +17,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.lang.NonNull;
 
-import cz.srnet.pisqorker.game.Coordinates;
-import cz.srnet.pisqorker.game.GameState;
-import cz.srnet.pisqorker.game.MakeMove;
-import cz.srnet.pisqorker.game.Move;
-import cz.srnet.pisqorker.game.MoveImpl;
-import cz.srnet.pisqorker.game.Player;
-
 final class MoveImplTest {
 
 	private @NonNull FakeGameContext context = new FakeGameContext();
@@ -39,15 +32,15 @@ final class MoveImplTest {
 				@Override
 				@NonNull
 				public Move to(@NonNull Coordinates xy) {
-					Move move = new MoveImpl(context, movesRepository, xy);
+					Move move = new MoveImpl(context, movesRepository, Piece.X, xy);
 					movesRepository._addMove(move);
 					return move;
 				}
 
 				@Override
 				@NonNull
-				public MakeMove as(@NonNull Player player) {
-					if (player != previous.player().next()) {
+				public MakeMove as(@NonNull Piece piece) {
+					if (piece != previous.piece().other()) {
 						throw new IllegalArgumentException();
 					}
 					return this;
@@ -58,15 +51,15 @@ final class MoveImplTest {
 	void testFirstMove() {
 		Move firstMove = firstMove();
 
-		new MoveAssert(firstMove).turn(1).state(GameState.started).player(Player.X).xy(Coordinates.of(0, 0))
+		new MoveAssert(firstMove).turn(1).state(GameState.started).player(Piece.X).xy(Coordinates.of(0, 0))
 				.previous(Optional.empty()).next(Optional.empty());
 	}
 
 	private @NonNull MoveImpl firstMove() {
-		return registerAsFirstMove(new MoveImpl(context, movesRepository, Coordinates.of(0, 0)));
+		return registerAsFirstMove(new MoveImpl(context, movesRepository, Piece.X, Coordinates.of(0, 0)));
 	}
 
-	private @NonNull MoveImpl firstMove(@NotNull Player player) {
+	private @NonNull MoveImpl firstMove(@NotNull Piece player) {
 		return registerAsFirstMove(new MoveImpl(context, movesRepository, player, Coordinates.of(0, 0)));
 	}
 
@@ -82,7 +75,7 @@ final class MoveImplTest {
 
 	@Test
 	void testSecondMoveWithPlayer() {
-		doSecondMove(firstMove -> firstMove.move().as(Player.O).to(1, 1));
+		doSecondMove(firstMove -> firstMove.move().as(Piece.O).to(1, 1));
 	}
 
 	private void doSecondMove(@NonNull UnaryOperator<Move> moveCall) {
@@ -91,7 +84,7 @@ final class MoveImplTest {
 		Move secondMove = Objects.requireNonNull(moveCall.apply(firstMove));
 
 		new MoveAssert(firstMove).next(secondMove);
-		new MoveAssert(secondMove).turn(2).state(GameState.started).player(Player.O).xy(Coordinates.of(1, 1))
+		new MoveAssert(secondMove).turn(2).state(GameState.started).player(Piece.O).xy(Coordinates.of(1, 1))
 				.previous(firstMove).next(Optional.empty());
 	}
 
@@ -99,7 +92,7 @@ final class MoveImplTest {
 	void testIllegalPlayerSecondMove() {
 		Move firstMove = firstMove();
 
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move().as(Player.X).to(1, 1));
+		assertThrows(IllegalArgumentException.class, () -> firstMove.move().as(Piece.X).to(1, 1));
 	}
 
 	@Test
@@ -153,8 +146,8 @@ final class MoveImplTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(Player.class)
-	void testWinOnFirstMove(@NonNull Player player) {
+	@EnumSource(Piece.class)
+	void testWinOnFirstMove(@NonNull Piece player) {
 		context._rules(new FakeRules(1, 1));
 		context._winConditionChecker(whatever -> true);
 
@@ -167,7 +160,7 @@ final class MoveImplTest {
 	void testWinOn3x3() {
 		Move lastMove = win3x3();
 
-		new MoveAssert(lastMove).allPreviousStarted().state(GameState.wonBy(Player.X));
+		new MoveAssert(lastMove).allPreviousStarted().state(GameState.wonBy(Piece.X));
 	}
 
 	private @NonNull Move win3x3() {

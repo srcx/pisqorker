@@ -22,7 +22,7 @@ final class GamesImpl implements Games {
 
 	@Override
 	@NonNull
-	public Game newGame(@NonNull Rules rules) {
+	public Game newGame(@NonNull Rules rules, @NonNull Player firstPlayer, @NonNull Player secondPlayer) {
 		GameContext context = new GameContext() {
 
 			@Override
@@ -38,7 +38,8 @@ final class GamesImpl implements Games {
 			}
 		};
 		String id = newId();
-		GameImpl game = new GameImpl(id, context, new MovesRepositoryImpl(context));
+		GameImpl game = new GameImpl(id, context, new MovesRepositoryImpl(context, firstPlayer.piece()), firstPlayer,
+				secondPlayer);
 		games.put(id, game);
 		return game;
 	}

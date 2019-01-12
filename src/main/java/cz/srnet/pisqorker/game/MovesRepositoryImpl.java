@@ -12,23 +12,23 @@ import org.springframework.lang.NonNull;
 
 final class MovesRepositoryImpl implements MovesRepository {
 
-	private static final @NonNull Player firstPlayer = Player.defaultFirst();
-
 	private final @NonNull GameContext context;
+	private final @NonNull Piece firstPiece;
 
 	private @NonNull Lock movesLock = new ReentrantLock();
 	private @NonNull List<Move> moves = new ArrayList<>();
 
-	public MovesRepositoryImpl(@NonNull GameContext context) {
+	public MovesRepositoryImpl(@NonNull GameContext context, @NonNull Piece firstPiece) {
 		this.context = context;
+		this.firstPiece = firstPiece;
 	}
 
 	@Override
 	@NonNull
-	public Player nextPlayer() {
+	public Piece nextPiece() {
 		try {
 			movesLock.lock();
-			return moves.isEmpty() ? firstPlayer : lastMoveNoLockNotNull().player().next();
+			return moves.isEmpty() ? firstPiece : lastMoveNoLockNotNull().piece().other();
 		} finally {
 			movesLock.unlock();
 		}
@@ -93,7 +93,7 @@ final class MovesRepositoryImpl implements MovesRepository {
 	public MakeMove move() {
 		return new MakeMove() {
 
-			private @NonNull Optional<Player> playerToCheck = Optional.empty();
+			private @NonNull Optional<Piece> pieceToCheck = Optional.empty();
 
 			@Override
 			@NonNull
@@ -107,7 +107,7 @@ final class MovesRepositoryImpl implements MovesRepository {
 				try {
 					movesLock.lock();
 					checkPlayer();
-					Move move = new MoveImpl(context, MovesRepositoryImpl.this, xy);
+					Move move = new MoveImpl(context, MovesRepositoryImpl.this, firstPiece, xy);
 					moves.add(move);
 					return move;
 				} finally {
@@ -116,19 +116,19 @@ final class MovesRepositoryImpl implements MovesRepository {
 			}
 
 			private void checkPlayer() {
-				playerToCheck.ifPresent(player -> {
-					Player nextPlayer = nextPlayer();
-					if (player != nextPlayer) {
+				pieceToCheck.ifPresent(piece -> {
+					Piece nextPiece = nextPiece();
+					if (piece != nextPiece) {
 						throw new IllegalArgumentException(
-								"Attempting to play as " + player + ", but it is " + nextPlayer + "'s turn");
+								"Attempting to play piece " + piece + ", but next piece played must be " + nextPiece);
 					}
 				});
 			}
 
 			@Override
 			@NonNull
-			public MakeMove as(@NonNull Player player) {
-				playerToCheck = Optional.of(player);
+			public MakeMove as(@NonNull Piece piece) {
+				pieceToCheck = Optional.of(piece);
 				return this;
 			}
 		};

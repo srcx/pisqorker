@@ -10,11 +10,20 @@ final class GameImpl implements Game {
 	private final @NonNull String id;
 	private final @NonNull GameContext context;
 	private final @NonNull MovesRepository moves;
+	private final @NonNull Player firstPlayer;
+	private final @NonNull Player secondPlayer;
 
-	public GameImpl(@NonNull String id, @NonNull GameContext context, @NonNull MovesRepository moves) {
+	public GameImpl(@NonNull String id, @NonNull GameContext context, @NonNull MovesRepository moves,
+			@NonNull Player firstPlayer, @NonNull Player secondPlayer) {
 		this.id = id;
 		this.context = context;
 		this.moves = moves;
+		if (firstPlayer.piece() == secondPlayer.piece()) {
+			throw new IllegalArgumentException(
+					"Players need to use different game pieces: " + firstPlayer + " vs " + secondPlayer);
+		}
+		this.firstPlayer = firstPlayer;
+		this.secondPlayer = secondPlayer;
 	}
 
 	@Override
@@ -43,7 +52,31 @@ final class GameImpl implements Game {
 		out.setRules(context.rules());
 		out.setState(state());
 		out.setMoves(moves.stream().map(Move::xy).collect(Collectors.toList()));
+		out.setFirstPlayer(firstPlayer);
+		out.setSecondPlayer(secondPlayer);
 		return out;
+	}
+
+	@Override
+	@NonNull
+	public Player firstPlayer() {
+		return firstPlayer;
+	}
+
+	@Override
+	@NonNull
+	public Player secondPlayer() {
+		return secondPlayer;
+	}
+
+	private @NonNull Player playerWith(@NonNull Piece piece) {
+		return firstPlayer.piece() == piece ? firstPlayer : secondPlayer;
+	}
+
+	@Override
+	@NonNull
+	public Player currentPlayer() {
+		return playerWith(moves().nextPiece());
 	}
 
 }

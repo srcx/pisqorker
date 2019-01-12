@@ -15,4 +15,13 @@ public interface Game extends TransferableOut<TransferableGame> {
 	@NonNull
 	GameState state();
 
+	@NonNull
+	Player firstPlayer();
+
+	@NonNull
+	Player secondPlayer();
+
+	@NonNull
+	Player currentPlayer();
+
 }

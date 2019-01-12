@@ -13,20 +13,14 @@ import org.springframework.lang.NonNull;
 
 final class MoveImpl implements Move {
 
-	private static final @NonNull Player firstPlayer = Player.defaultFirst();
-
 	private final @NonNull GameContext context;
 	private final @NonNull MovesRepository movesRepository;
 	private final int turn;
-	private final @NonNull Player player;
+	private final @NonNull Piece piece;
 	private final @NonNull Coordinates xy;
 	private final @NonNull GameState state;
 
-	MoveImpl(@NonNull GameContext context, @NonNull MovesRepository movesRepository, @NonNull Coordinates xy) {
-		this(context, movesRepository, firstPlayer, xy);
-	}
-
-	MoveImpl(@NonNull GameContext context, @NonNull MovesRepository movesRepository, @NotNull Player firstPlayer,
+	MoveImpl(@NonNull GameContext context, @NonNull MovesRepository movesRepository, @NotNull Piece firstPiece,
 			@NonNull Coordinates xy) {
 		Optional<Move> previous = movesRepository.lastMove();
 		checkIfValidState(previous);
@@ -36,7 +30,7 @@ final class MoveImpl implements Move {
 		this.movesRepository = movesRepository;
 		this.xy = xy;
 		turn = previous.map(Move::turn).map(i -> i + 1).orElse(1);
-		player = Objects.requireNonNull(previous.map(Move::player).map(Player::next).orElse(firstPlayer));
+		piece = Objects.requireNonNull(previous.map(Move::piece).map(Piece::other).orElse(firstPiece));
 		state = determineState();
 	}
 
@@ -48,7 +42,7 @@ final class MoveImpl implements Move {
 
 	private @NonNull GameState determineState() {
 		if (isWon()) {
-			return GameState.wonBy(player);
+			return GameState.wonBy(piece);
 		}
 		if (isDraw()) {
 			return GameState.draw;
@@ -90,8 +84,8 @@ final class MoveImpl implements Move {
 
 	@Override
 	@NonNull
-	public Player player() {
-		return player;
+	public Piece piece() {
+		return piece;
 	}
 
 	private static void checkIfOccupied(@NonNull Optional<Move> move, @NonNull Coordinates xy) {

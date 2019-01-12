@@ -12,8 +12,10 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.Converter;
 
 import cz.srnet.pisqorker.game.Game;
+import cz.srnet.pisqorker.game.HumanPlayer;
 import cz.srnet.pisqorker.game.Rules;
 import cz.srnet.pisqorker.game.TransferableGame;
+import cz.srnet.pisqorker.game.TransferableHumanPlayer;
 import cz.srnet.pisqorker.game.TransferableRules;
 
 @Component
@@ -24,6 +26,7 @@ final class JacksonMappings implements Jackson2ObjectMapperBuilderCustomizer {
 		deserializer(Rules.class, TransferableRules.class, jacksonObjectMapperBuilder);
 		serializer(Rules.class, TransferableRules.class, jacksonObjectMapperBuilder);
 		serializer(Game.class, TransferableGame.class, jacksonObjectMapperBuilder);
+		serializer(HumanPlayer.class, TransferableHumanPlayer.class, jacksonObjectMapperBuilder);
 	}
 
 	private <C, T extends TransferableIn<C>> void deserializer(@NonNull Class<C> clazz, @NonNull Class<T> transferable,

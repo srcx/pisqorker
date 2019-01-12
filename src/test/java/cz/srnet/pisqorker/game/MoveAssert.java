@@ -9,7 +9,7 @@ import org.springframework.lang.NonNull;
 import cz.srnet.pisqorker.game.Coordinates;
 import cz.srnet.pisqorker.game.GameState;
 import cz.srnet.pisqorker.game.Move;
-import cz.srnet.pisqorker.game.Player;
+import cz.srnet.pisqorker.game.Piece;
 
 final class MoveAssert {
 
@@ -32,8 +32,8 @@ final class MoveAssert {
 	}
 
 	@NonNull
-	MoveAssert player(@NonNull Player expected) {
-		assertEquals(expected, move.player());
+	MoveAssert player(@NonNull Piece expected) {
+		assertEquals(expected, move.piece());
 		return this;
 	}
 

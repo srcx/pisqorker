@@ -10,7 +10,7 @@ public enum GameState {
 		return this != notStarted && this != started;
 	}
 
-	static @NonNull GameState wonBy(@NonNull Player player) {
+	static @NonNull GameState wonBy(@NonNull Piece player) {
 		switch (player) {
 		case O:
 			return wonByO;

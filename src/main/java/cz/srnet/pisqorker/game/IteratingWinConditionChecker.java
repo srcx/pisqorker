@@ -40,7 +40,7 @@ public final class IteratingWinConditionChecker implements WinConditionChecker {
 	}
 
 	private int countWinning(@NonNull Move lastMove, @NonNull UnaryOperator<Coordinates> direction) {
-		Player player = lastMove.player();
+		Piece player = lastMove.piece();
 		Coordinates xy = Objects.requireNonNull(direction.apply(lastMove.xy()));
 		int count = 0;
 		while (field(lastMove, xy) == player) {
@@ -50,8 +50,8 @@ public final class IteratingWinConditionChecker implements WinConditionChecker {
 		return count;
 	}
 
-	private @Nullable Player field(@NonNull Move lastMove, @NonNull Coordinates xy) {
-		return lastMove.previousStream().filter(m -> m.xy().equals(xy)).findAny().map(Move::player).orElse(null);
+	private @Nullable Piece field(@NonNull Move lastMove, @NonNull Coordinates xy) {
+		return lastMove.previousStream().filter(m -> m.xy().equals(xy)).findAny().map(Move::piece).orElse(null);
 	}
 
 }

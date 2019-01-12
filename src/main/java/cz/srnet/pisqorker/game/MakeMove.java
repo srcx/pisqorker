@@ -11,6 +11,6 @@ interface MakeMove {
 	Move to(int x, int y);
 
 	@NonNull
-	MakeMove as(@NonNull Player player);
+	MakeMove as(@NonNull Piece piece);
 
 }

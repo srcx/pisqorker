@@ -13,7 +13,7 @@ interface Move {
 	GameState state();
 
 	@NonNull
-	Player player();
+	Piece piece();
 
 	@NonNull
 	Coordinates xy();

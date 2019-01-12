@@ -18,6 +18,7 @@ final class FakeMovesRepository implements MovesRepository {
 
 	private @NonNull List<Move> moves = new ArrayList<>();
 	private @Nullable Function<Move, MakeMove> moveWithPreviousFunction;
+	private @NonNull Piece firstPiece = Piece.X;
 
 	public @NonNull FakeMovesRepository _firstMove(@NonNull Move move) {
 		assertTrue(moves.isEmpty());
@@ -81,8 +82,8 @@ final class FakeMovesRepository implements MovesRepository {
 
 	@Override
 	@NonNull
-	public Player nextPlayer() {
-		throw new UnsupportedOperationException();
+	public Piece nextPiece() {
+		return moves.isEmpty() ? firstPiece : Objects.requireNonNull(moves.get(moves.size() - 1)).piece().other();
 	}
 
 	@Override

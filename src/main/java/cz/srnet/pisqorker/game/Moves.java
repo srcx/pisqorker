@@ -14,7 +14,7 @@ interface Moves {
 	Optional<Move> lastMove();
 
 	@NonNull
-	Player nextPlayer();
+	Piece nextPiece();
 
 	@NonNull
 	MakeMove move();

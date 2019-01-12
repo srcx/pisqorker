@@ -11,17 +11,17 @@ import cz.srnet.pisqorker.game.Coordinates;
 import cz.srnet.pisqorker.game.GameState;
 import cz.srnet.pisqorker.game.MakeMove;
 import cz.srnet.pisqorker.game.Move;
-import cz.srnet.pisqorker.game.Player;
+import cz.srnet.pisqorker.game.Piece;
 
 final class FakeMove implements Move {
 
-	private @NonNull Optional<Player> player = Optional.empty();
+	private @NonNull Optional<Piece> piece = Optional.empty();
 	private @NonNull Optional<Coordinates> xy = Optional.empty();
 	private @NonNull Optional<Supplier<Stream<Move>>> previousStreamSupplier = Optional.empty();
 	private @NonNull Optional<GameState> state = Optional.empty();
 
-	public @NonNull FakeMove _player(@NonNull Player player) {
-		this.player = Optional.of(player);
+	public @NonNull FakeMove _piece(@NonNull Piece piece) {
+		this.piece = Optional.of(piece);
 		return this;
 	}
 
@@ -53,8 +53,8 @@ final class FakeMove implements Move {
 
 	@Override
 	@NonNull
-	public Player player() {
-		return Objects.requireNonNull(player.orElseThrow(() -> new UnsupportedOperationException()));
+	public Piece piece() {
+		return Objects.requireNonNull(piece.orElseThrow(() -> new UnsupportedOperationException()));
 	}
 
 	@Override

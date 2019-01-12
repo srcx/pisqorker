@@ -9,23 +9,17 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
-import cz.srnet.pisqorker.game.Coordinates;
-import cz.srnet.pisqorker.game.Move;
-import cz.srnet.pisqorker.game.Moves;
-import cz.srnet.pisqorker.game.MovesRepositoryImpl;
-import cz.srnet.pisqorker.game.Player;
-
 final class MovesRepositoryImplTest {
 
 	@Test
 	void testNoMoves() {
 		FakeGameContext context = new FakeGameContext();
 
-		Moves impl = new MovesRepositoryImpl(context);
+		Moves impl = new MovesRepositoryImpl(context, Piece.X);
 
 		assertFalse(impl.firstMove().isPresent());
 		assertFalse(impl.lastMove().isPresent());
-		assertEquals(Player.defaultFirst(), impl.nextPlayer());
+		assertEquals(Piece.X, impl.nextPiece());
 	}
 
 	@Test
@@ -40,30 +34,30 @@ final class MovesRepositoryImplTest {
 
 	@Test
 	void testOneMove3() {
-		doTestOneMove(impl -> impl.move().as(Player.defaultFirst()).to(0, 0));
+		doTestOneMove(impl -> impl.move().as(Piece.X).to(0, 0));
 	}
 
 	@Test
 	void testOneMove4() {
-		doTestOneMove(impl -> impl.move().as(Player.defaultFirst()).to(Coordinates.of(0, 0)));
+		doTestOneMove(impl -> impl.move().as(Piece.X).to(Coordinates.of(0, 0)));
 	}
 
 	@Test
 	void testOneMoveWithWrongPlayer1() {
 		assertThrows(IllegalArgumentException.class,
-				() -> doTestOneMove(impl -> impl.move().as(Player.defaultFirst().next()).to(0, 0)));
+				() -> doTestOneMove(impl -> impl.move().as(Piece.X.other()).to(0, 0)));
 	}
 
 	@Test
 	void testOneMoveWithWrongPlayer2() {
 		assertThrows(IllegalArgumentException.class,
-				() -> doTestOneMove(impl -> impl.move().as(Player.defaultFirst().next()).to(Coordinates.of(0, 0))));
+				() -> doTestOneMove(impl -> impl.move().as(Piece.X.other()).to(Coordinates.of(0, 0))));
 	}
 
 	private void doTestOneMove(@NonNull Function<Moves, Move> moveFunction) {
 		FakeGameContext context = new FakeGameContext();
 
-		Moves impl = new MovesRepositoryImpl(context);
+		Moves impl = new MovesRepositoryImpl(context, Piece.X);
 		Move first = moveFunction.apply(impl);
 
 		assertEquals(Coordinates.of(0, 0), first.xy());
@@ -71,14 +65,14 @@ final class MovesRepositoryImplTest {
 		assertEquals(first, impl.lastMove().get());
 		assertFalse(first.previous().isPresent());
 		assertEquals(0, first.previousStream().count());
-		assertEquals(Player.defaultFirst().next(), impl.nextPlayer());
+		assertEquals(Piece.X.other(), impl.nextPiece());
 	}
 
 	@Test
 	void testTwoMoves() {
 		FakeGameContext context = new FakeGameContext();
 
-		Moves impl = new MovesRepositoryImpl(context);
+		Moves impl = new MovesRepositoryImpl(context, Piece.X);
 		Move first = impl.move().to(0, 0);
 		Move second = impl.move().to(1, 1);
 
@@ -90,7 +84,7 @@ final class MovesRepositoryImplTest {
 		assertEquals(second, impl.lastMove().get());
 		assertEquals(first, second.previous().get());
 		assertEquals(1, second.previousStream().count());
-		assertEquals(Player.defaultFirst(), impl.nextPlayer());
+		assertEquals(Piece.X, impl.nextPiece());
 	}
 
 }
