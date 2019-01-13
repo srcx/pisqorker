@@ -7,4 +7,6 @@ public interface Player {
 	@NonNull
 	Piece piece();
 
+	boolean isPlayableNow();
+
 }

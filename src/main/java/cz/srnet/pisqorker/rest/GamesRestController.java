@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cz.srnet.pisqorker.game.Game;
 import cz.srnet.pisqorker.game.Games;
-import cz.srnet.pisqorker.game.HumanPlayer;
-import cz.srnet.pisqorker.game.Piece;
-import cz.srnet.pisqorker.game.Rules;
 
 @RestController
 @RequestMapping(RestApiVersions.v1)
@@ -27,8 +24,8 @@ final class GamesRestController {
 	}
 
 	@PostMapping("/games")
-	public @NonNull Game newGame(@NonNull @RequestBody Rules rules) {
-		return games.newGame(rules, HumanPlayer.create(Piece.X), HumanPlayer.create(Piece.O));
+	public @NonNull Game newGame(@NonNull @RequestBody NewGameRequest request) {
+		return request.execute(games);
 	}
 
 	@GetMapping("/games/{id}")

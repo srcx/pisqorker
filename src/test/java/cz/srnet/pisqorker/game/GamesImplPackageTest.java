@@ -5,7 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
-final class GamesImplIntegrationTest {
+import cz.srnet.pisqorker.users.FakeUser;
+import cz.srnet.pisqorker.users.FakeUsers;
+import cz.srnet.pisqorker.users.User;
+import cz.srnet.pisqorker.users.Users;
+
+final class GamesImplPackageTest {
 
 	@Test
 	void test3x3Draw() {
@@ -13,7 +18,7 @@ final class GamesImplIntegrationTest {
 		Rules rules = new RulesImpl(3, 3);
 
 		Games impl = new GamesImpl(winConditionCheckers);
-		Game game = impl.newGame(rules, FakePlayer.X, FakePlayer.O);
+		Game game = impl.newGame(rules, players());
 
 		assertEquals(GameState.notStarted, game.state());
 		doMove(game, 1, Piece.X, 0, 0, GameState.started);
@@ -33,7 +38,7 @@ final class GamesImplIntegrationTest {
 		Rules rules = new RulesImpl(3, 3);
 
 		Games impl = new GamesImpl(winConditionCheckers);
-		Game game = impl.newGame(rules, FakePlayer.X, FakePlayer.O);
+		Game game = impl.newGame(rules, players());
 
 		assertEquals(GameState.notStarted, game.state());
 		doMove(game, 1, Piece.X, 0, 0, GameState.started);
@@ -51,6 +56,14 @@ final class GamesImplIntegrationTest {
 		assertEquals(player, move.piece());
 		assertEquals(Coordinates.of(x, y), move.xy());
 		assertEquals(state, game.state());
+	}
+
+	private @NonNull Players players() {
+		User user = new FakeUser()._canPlayAsProvider(player -> true);
+		Users users = new FakeUsers()._current(user);
+		Player first = HumanPlayer.create(Piece.X, user, users);
+		Player second = HumanPlayer.create(Piece.O, user, users);
+		return Players.create(first, second);
 	}
 
 }

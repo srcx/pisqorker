@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.springframework.lang.NonNull;
@@ -14,13 +15,16 @@ final class MovesRepositoryImpl implements MovesRepository {
 
 	private final @NonNull GameContext context;
 	private final @NonNull Piece firstPiece;
+	private final @NonNull Consumer<Piece> moveChecker;
 
 	private @NonNull Lock movesLock = new ReentrantLock();
 	private @NonNull List<Move> moves = new ArrayList<>();
 
-	public MovesRepositoryImpl(@NonNull GameContext context, @NonNull Piece firstPiece) {
+	public MovesRepositoryImpl(@NonNull GameContext context, @NonNull Piece firstPiece,
+			@NonNull Consumer<Piece> moveChecker) {
 		this.context = context;
 		this.firstPiece = firstPiece;
+		this.moveChecker = moveChecker;
 	}
 
 	@Override
@@ -106,7 +110,7 @@ final class MovesRepositoryImpl implements MovesRepository {
 			public Move to(@NonNull Coordinates xy) {
 				try {
 					movesLock.lock();
-					checkPlayer();
+					checkMove();
 					Move move = new MoveImpl(context, MovesRepositoryImpl.this, firstPiece, xy);
 					moves.add(move);
 					return move;
@@ -115,7 +119,7 @@ final class MovesRepositoryImpl implements MovesRepository {
 				}
 			}
 
-			private void checkPlayer() {
+			private void checkMove() {
 				pieceToCheck.ifPresent(piece -> {
 					Piece nextPiece = nextPiece();
 					if (piece != nextPiece) {
@@ -123,6 +127,7 @@ final class MovesRepositoryImpl implements MovesRepository {
 								"Attempting to play piece " + piece + ", but next piece played must be " + nextPiece);
 					}
 				});
+				moveChecker.accept(nextPiece());
 			}
 
 			@Override

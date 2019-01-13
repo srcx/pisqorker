@@ -16,10 +16,7 @@ public interface Game extends TransferableOut<TransferableGame> {
 	GameState state();
 
 	@NonNull
-	Player firstPlayer();
-
-	@NonNull
-	Player secondPlayer();
+	Players players();
 
 	@NonNull
 	Player currentPlayer();

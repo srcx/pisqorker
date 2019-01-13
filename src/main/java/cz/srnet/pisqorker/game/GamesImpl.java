@@ -22,7 +22,7 @@ final class GamesImpl implements Games {
 
 	@Override
 	@NonNull
-	public Game newGame(@NonNull Rules rules, @NonNull Player firstPlayer, @NonNull Player secondPlayer) {
+	public Game newGame(@NonNull Rules rules, @NonNull Players players) {
 		GameContext context = new GameContext() {
 
 			@Override
@@ -37,11 +37,19 @@ final class GamesImpl implements Games {
 				return rules;
 			}
 		};
+		MovesRepositoryImpl movesRepo = new MovesRepositoryImpl(context, players.first().piece(),
+				piece -> checkMove(players, Objects.requireNonNull(piece)));
 		String id = newId();
-		GameImpl game = new GameImpl(id, context, new MovesRepositoryImpl(context, firstPlayer.piece()), firstPlayer,
-				secondPlayer);
+		GameImpl game = new GameImpl(id, context, movesRepo, players);
 		games.put(id, game);
 		return game;
+	}
+
+	private void checkMove(@NonNull Players players, @NonNull Piece piece) {
+		Player nextPlayer = players.with(piece);
+		if (!nextPlayer.isPlayableNow()) {
+			throw new IllegalArgumentException("Forbidden to play as " + nextPlayer);
+		}
 	}
 
 	private @NonNull String newId() {

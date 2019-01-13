@@ -8,8 +8,7 @@ public final class TransferableGame {
 	private Rules rules;
 	private GameState state;
 	private List<Coordinates> moves;
-	private Player firstPlayer;
-	private Player secondPlayer;
+	private Players players;
 
 	public String getId() {
 		return id;
@@ -43,20 +42,12 @@ public final class TransferableGame {
 		this.moves = moves;
 	}
 
-	public Player getFirstPlayer() {
-		return firstPlayer;
+	public Players getPlayers() {
+		return players;
 	}
 
-	public void setFirstPlayer(Player firstPlayer) {
-		this.firstPlayer = firstPlayer;
-	}
-
-	public Player getSecondPlayer() {
-		return secondPlayer;
-	}
-
-	public void setSecondPlayer(Player secondPlayer) {
-		this.secondPlayer = secondPlayer;
+	public void setPlayers(Players players) {
+		this.players = players;
 	}
 
 }

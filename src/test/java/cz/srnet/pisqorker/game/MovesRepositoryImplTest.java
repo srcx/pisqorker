@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
@@ -11,11 +12,14 @@ import org.springframework.lang.NonNull;
 
 final class MovesRepositoryImplTest {
 
+	private static final @NonNull Consumer<Piece> voidChecker = piece -> {
+	};
+
 	@Test
 	void testNoMoves() {
 		FakeGameContext context = new FakeGameContext();
 
-		Moves impl = new MovesRepositoryImpl(context, Piece.X);
+		Moves impl = new MovesRepositoryImpl(context, Piece.X, voidChecker);
 
 		assertFalse(impl.firstMove().isPresent());
 		assertFalse(impl.lastMove().isPresent());
@@ -57,7 +61,7 @@ final class MovesRepositoryImplTest {
 	private void doTestOneMove(@NonNull Function<Moves, Move> moveFunction) {
 		FakeGameContext context = new FakeGameContext();
 
-		Moves impl = new MovesRepositoryImpl(context, Piece.X);
+		Moves impl = new MovesRepositoryImpl(context, Piece.X, voidChecker);
 		Move first = moveFunction.apply(impl);
 
 		assertEquals(Coordinates.of(0, 0), first.xy());
@@ -72,7 +76,7 @@ final class MovesRepositoryImplTest {
 	void testTwoMoves() {
 		FakeGameContext context = new FakeGameContext();
 
-		Moves impl = new MovesRepositoryImpl(context, Piece.X);
+		Moves impl = new MovesRepositoryImpl(context, Piece.X, voidChecker);
 		Move first = impl.move().to(0, 0);
 		Move second = impl.move().to(1, 1);
 

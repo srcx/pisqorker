@@ -15,7 +15,7 @@ final class GamesImplTest {
 		FakeRules rules = new FakeRules(3, 3);
 
 		Games impl = new GamesImpl(winConditionCheckers);
-		Game game = impl.newGame(rules, FakePlayer.X, FakePlayer.O);
+		Game game = impl.newGame(rules, FakePlayers.XO);
 
 		assertEquals(GameState.notStarted, game.state());
 		game.moves().move().to(0, 0);
@@ -28,7 +28,7 @@ final class GamesImplTest {
 		FakeRules rules = new FakeRules(3, 3);
 
 		Games impl = new GamesImpl(winConditionCheckers);
-		Game expected = impl.newGame(rules, FakePlayer.X, FakePlayer.O);
+		Game expected = impl.newGame(rules, FakePlayers.XO);
 		Game actual = impl.game(expected.id()).get();
 
 		assertEquals(expected, actual);
@@ -43,7 +43,7 @@ final class GamesImplTest {
 		Set<String> ids = new HashSet<>();
 		int toCreate = 10;
 		for (int i = 0; i < toCreate; i++) {
-			Game game = impl.newGame(rules, FakePlayer.X, FakePlayer.O);
+			Game game = impl.newGame(rules, FakePlayers.XO);
 			ids.add(game.id());
 		}
 

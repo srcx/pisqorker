@@ -2,35 +2,13 @@ package cz.srnet.pisqorker.game;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.lang.NonNull;
 
 final class GameImplTest {
-
-	@ParameterizedTest
-	@CsvSource({ //
-			"X, X, true", //
-			"X, O, false", //
-			"O, X, false", //
-			"O, O, true", //
-	})
-	void testInvalidPlayers(@NonNull Piece first, @NonNull Piece second, boolean expectedFailed) throws Throwable {
-		FakeGameContext context = new FakeGameContext();
-		FakeMovesRepository moves = new FakeMovesRepository();
-
-		Executable call = () -> new GameImpl("id", context, moves, new FakePlayer(first), new FakePlayer(second));
-		if (expectedFailed) {
-			assertThrows(IllegalArgumentException.class, call);
-		} else {
-			call.execute();
-		}
-	}
 
 	@Test
 	void testIdAndMoves() {
@@ -38,7 +16,7 @@ final class GameImplTest {
 		FakeGameContext context = new FakeGameContext();
 		FakeMovesRepository moves = new FakeMovesRepository();
 
-		Game impl = new GameImpl(id, context, moves, FakePlayer.X, FakePlayer.O);
+		Game impl = new GameImpl(id, context, moves, FakePlayers.XO);
 
 		assertEquals(id, impl.id());
 		assertSame(moves, impl.moves());
@@ -49,21 +27,19 @@ final class GameImplTest {
 		String id = "id";
 		FakeGameContext context = new FakeGameContext();
 		FakeMovesRepository moves = new FakeMovesRepository();
-		FakePlayer firstPlayer = FakePlayer.X;
-		FakePlayer secondPlayer = FakePlayer.O;
+		FakePlayers players = FakePlayers.XO;
 
-		Game impl = new GameImpl(id, context, moves, firstPlayer, secondPlayer);
+		Game impl = new GameImpl(id, context, moves, players);
 
-		assertEquals(firstPlayer, impl.firstPlayer());
-		assertEquals(secondPlayer, impl.secondPlayer());
+		assertEquals(players, impl.players());
 
-		assertEquals(firstPlayer, impl.currentPlayer());
+		assertEquals(players.first(), impl.currentPlayer());
 		moves._firstMove(new FakeMove()._piece(Piece.X));
-		assertEquals(secondPlayer, impl.currentPlayer());
+		assertEquals(players.second(), impl.currentPlayer());
 		moves._addMove(new FakeMove()._piece(Piece.O));
-		assertEquals(firstPlayer, impl.currentPlayer());
+		assertEquals(players.first(), impl.currentPlayer());
 		moves._addMove(new FakeMove()._piece(Piece.X));
-		assertEquals(secondPlayer, impl.currentPlayer());
+		assertEquals(players.second(), impl.currentPlayer());
 	}
 
 	@ParameterizedTest
@@ -77,7 +53,7 @@ final class GameImplTest {
 			moves._firstMove(firstMove)._addMove(lastMove);
 		}
 
-		Game impl = new GameImpl("id", context, moves, FakePlayer.X, FakePlayer.O);
+		Game impl = new GameImpl("id", context, moves, FakePlayers.XO);
 
 		assertEquals(state, impl.state());
 	}
