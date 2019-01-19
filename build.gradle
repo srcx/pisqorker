@@ -22,13 +22,11 @@ repositories {
     mavenCentral()
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
-    // until https://bugs.eclipse.org/bugs/show_bug.cgi?id=538956 is fixed
-    testCompile("junit:junit")
     testCompile("org.junit.jupiter:junit-jupiter-api")
     testCompile("org.junit.jupiter:junit-jupiter-engine")
     testCompile("org.junit.jupiter:junit-jupiter-params")
