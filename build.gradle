@@ -27,6 +27,7 @@ targetCompatibility = 11
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-security")
     testCompile("org.junit.jupiter:junit-jupiter-api")
     testCompile("org.junit.jupiter:junit-jupiter-engine")
     testCompile("org.junit.jupiter:junit-jupiter-params")
