@@ -45,4 +45,9 @@ final class HumanPlayerImpl implements HumanPlayer {
 		return users.current().canPlayAs(this);
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%s:%s", piece, user);
+	}
+
 }

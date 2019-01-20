@@ -6,22 +6,20 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
-final class HardcodedUsers implements Users {
+@Repository
+final class HardcodedUsersRepository implements UsersRepository {
 
 	private final @NonNull Map<String, User> users = new HashMap<>();
 
-	public HardcodedUsers() {
-		users.put("joe", new UserImpl("joe"));
+	public HardcodedUsersRepository() {
+		addUser("joe");
+		addUser("jane");
 	}
 
-	@Override
-	@NonNull
-	public User current() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	private void addUser(@NonNull String id) {
+		users.put(id, new UserImpl(id));
 	}
 
 	@Override

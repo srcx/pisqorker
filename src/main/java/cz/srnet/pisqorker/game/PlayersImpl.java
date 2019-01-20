@@ -36,4 +36,9 @@ final class PlayersImpl implements Players {
 		return out;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("[%s, %s]", first, second);
+	}
+
 }

@@ -53,4 +53,9 @@ final class UserImpl implements User {
 		return Objects.equals(id, other.id);
 	}
 
+	@Override
+	public String toString() {
+		return id;
+	}
+
 }
