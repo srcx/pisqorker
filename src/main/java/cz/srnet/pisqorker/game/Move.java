@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import org.springframework.lang.NonNull;
 
-interface Move {
+public interface Move {
 
 	int turn();
 

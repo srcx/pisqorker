@@ -33,4 +33,11 @@ final class GamesRestController {
 		return Objects.requireNonNull(games.game(id).orElseThrow(() -> new GameNotFoundException(id)));
 	}
 
+	@PostMapping("/games/{id}/move")
+	public @NonNull Game move(@NonNull @PathVariable String id, @NonNull @RequestBody MoveRequest request) {
+		Game game = game(id);
+		request.execute(game);
+		return game;
+	}
+
 }

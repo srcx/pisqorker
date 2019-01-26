@@ -14,11 +14,13 @@ import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.Converter;
 
+import cz.srnet.pisqorker.game.Coordinates;
 import cz.srnet.pisqorker.game.Game;
 import cz.srnet.pisqorker.game.HumanPlayer;
 import cz.srnet.pisqorker.game.Player;
 import cz.srnet.pisqorker.game.Players;
 import cz.srnet.pisqorker.game.Rules;
+import cz.srnet.pisqorker.game.TransferableCoordinates;
 import cz.srnet.pisqorker.game.TransferableGame;
 import cz.srnet.pisqorker.game.TransferablePlayer;
 import cz.srnet.pisqorker.game.TransferablePlayers;
@@ -38,15 +40,22 @@ final class JacksonMappings implements Jackson2ObjectMapperBuilderCustomizer {
 
 	@Override
 	public void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
-		deserializer(Rules.class, TransferableRules.class, null, jacksonObjectMapperBuilder);
 		serializer(Rules.class, TransferableRules.class, jacksonObjectMapperBuilder);
+		deserializer(Rules.class, TransferableRules.class, null, jacksonObjectMapperBuilder);
+
 		serializer(Game.class, TransferableGame.class, jacksonObjectMapperBuilder);
-		deserializer(Player.class, TransferablePlayer.class, t -> t.injectUsers(users), jacksonObjectMapperBuilder);
+
 		serializer(HumanPlayer.class, TransferablePlayer.class, jacksonObjectMapperBuilder);
+		deserializer(Player.class, TransferablePlayer.class, t -> t.injectUsers(users), jacksonObjectMapperBuilder);
+
 		serializer(User.class, TransferableUser.class, jacksonObjectMapperBuilder);
 		deserializer(User.class, TransferableUser.class, t -> t.injectUsers(users), jacksonObjectMapperBuilder);
-		deserializer(Players.class, TransferablePlayers.class, null, jacksonObjectMapperBuilder);
+
 		serializer(Players.class, TransferablePlayers.class, jacksonObjectMapperBuilder);
+		deserializer(Players.class, TransferablePlayers.class, null, jacksonObjectMapperBuilder);
+
+		serializer(Coordinates.class, TransferableCoordinates.class, jacksonObjectMapperBuilder);
+		deserializer(Coordinates.class, TransferableCoordinates.class, null, jacksonObjectMapperBuilder);
 	}
 
 	private <C, T extends TransferableIn<C>> void deserializer(@NonNull Class<C> clazz, @NonNull Class<T> transferable,

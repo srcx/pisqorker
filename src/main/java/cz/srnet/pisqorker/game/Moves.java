@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import org.springframework.lang.NonNull;
 
-interface Moves {
+public interface Moves {
 
 	@NonNull
 	Optional<Move> firstMove();

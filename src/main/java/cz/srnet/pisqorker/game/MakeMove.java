@@ -2,7 +2,7 @@ package cz.srnet.pisqorker.game;
 
 import org.springframework.lang.NonNull;
 
-interface MakeMove {
+public interface MakeMove {
 
 	@NonNull
 	Move to(@NonNull Coordinates xy);

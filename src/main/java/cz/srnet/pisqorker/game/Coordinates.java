@@ -4,7 +4,9 @@ import java.util.Objects;
 
 import org.springframework.lang.NonNull;
 
-public final class Coordinates {
+import cz.srnet.pisqorker.rest.TransferableOut;
+
+public final class Coordinates implements TransferableOut<TransferableCoordinates> {
 
 	public static @NonNull Coordinates of(int x, int y) {
 		return new Coordinates(x, y);
@@ -77,6 +79,12 @@ public final class Coordinates {
 	@Override
 	public String toString() {
 		return "[" + x + ", " + y + "]";
+	}
+
+	@Override
+	@NonNull
+	public TransferableCoordinates transferOut() {
+		return new TransferableCoordinates(x, y);
 	}
 
 }
