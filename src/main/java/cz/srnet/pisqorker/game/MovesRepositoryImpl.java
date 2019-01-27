@@ -123,8 +123,8 @@ final class MovesRepositoryImpl implements MovesRepository {
 				pieceToCheck.ifPresent(piece -> {
 					Piece nextPiece = nextPiece();
 					if (piece != nextPiece) {
-						throw new IllegalArgumentException(
-								"Attempting to play piece " + piece + ", but next piece played must be " + nextPiece);
+						throw new IllegalPieceException(Objects.requireNonNull(piece),
+								"next piece played must be " + nextPiece);
 					}
 				});
 				moveChecker.accept(nextPiece());

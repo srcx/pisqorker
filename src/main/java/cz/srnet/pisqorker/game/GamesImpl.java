@@ -19,7 +19,7 @@ final class GamesImpl implements Games {
 	@NonNull
 	public Game newGame(@NonNull Rules rules, @NonNull Players players) {
 		if (!isPlayableNow(players)) {
-			throw new IllegalArgumentException("Forbidden to play game with players " + players);
+			throw new ForbiddenPlayerException(players);
 		}
 		return repository.newGame(rules, players, piece -> checkMove(players, Objects.requireNonNull(piece)));
 	}
@@ -27,7 +27,7 @@ final class GamesImpl implements Games {
 	private static void checkMove(@NonNull Players players, @NonNull Piece piece) {
 		Player nextPlayer = players.with(piece);
 		if (!nextPlayer.isPlayableNow()) {
-			throw new IllegalArgumentException("Forbidden to play as " + nextPlayer);
+			throw new ForbiddenPlayerException(nextPlayer);
 		}
 	}
 

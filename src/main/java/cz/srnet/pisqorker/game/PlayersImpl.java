@@ -9,7 +9,8 @@ final class PlayersImpl implements Players {
 
 	public PlayersImpl(@NonNull Player first, @NonNull Player second) {
 		if (first.piece() == second.piece()) {
-			throw new IllegalArgumentException("Players need to use different game pieces: " + first + " vs " + second);
+			throw new IllegalGameSetupException(
+					"Players need to use different game pieces: " + first + " vs " + second);
 		}
 		this.first = first;
 		this.second = second;

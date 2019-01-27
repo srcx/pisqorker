@@ -91,20 +91,20 @@ final class MoveImpl implements Move {
 	private static void checkIfOccupied(@NonNull Optional<Move> move, @NonNull Coordinates xy) {
 		givenAndPreviousStream(move).forEach(m -> {
 			if (m.xy().equals(xy)) {
-				throw new IllegalArgumentException("Position " + xy + " is already occupied");
+				throw new IllegalCoordinatesException(xy, "it is already occupied");
 			}
 		});
 	}
 
 	private static void checkIfOutOfBounds(@NonNull Rules rules, @NonNull Coordinates xy) {
 		if (!rules.legalCoordinates(xy)) {
-			throw new IllegalArgumentException("Position " + xy + " is out of bounds");
+			throw new IllegalCoordinatesException(xy, "it is out of bounds");
 		}
 	}
 
 	private static void checkIfValidState(@NonNull Optional<Move> previous) {
 		if (previous.map(Move::state).map(GameState::isEndState).orElse(false)) {
-			throw new IllegalStateException("Game has already ended");
+			throw new IllegalGameStateException("Game has already ended");
 		}
 	}
 
