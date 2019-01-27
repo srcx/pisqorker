@@ -2,10 +2,10 @@ package cz.srnet.pisqorker.rest;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -18,12 +18,12 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-class SecurityConfig extends WebSecurityConfigurerAdapter {
+@Order(1)
+class RestSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final @NonNull TokenAuthenticationProvider provider;
 
-	public SecurityConfig(@NonNull TokenAuthenticationProvider provider) {
+	public RestSecurityConfig(@NonNull TokenAuthenticationProvider provider) {
 		super();
 		this.provider = provider;
 	}
@@ -36,7 +36,8 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		RequestMatcher apiRequestMatcher = RestApiVersions.apiRequestMatcher();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
+		http.requestMatcher(apiRequestMatcher).sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
 				.defaultAuthenticationEntryPointFor(forbiddenEntryPoint(), apiRequestMatcher).and()
 				.authenticationProvider(provider)
 				.addFilterBefore(restAuthenticationFilter(), AnonymousAuthenticationFilter.class).authorizeRequests()
