@@ -13,8 +13,9 @@ final class GamesImplTest {
 	void testNewGame() {
 		WinConditionCheckers winConditionCheckers = (rules) -> (move) -> true;
 		FakeRules rules = new FakeRules(3, 3);
+		GamesRepository repo = new InMemoryGamesRepository(winConditionCheckers);
 
-		Games impl = new GamesImpl(winConditionCheckers);
+		Games impl = new GamesImpl(repo);
 		Game game = impl.newGame(rules, FakePlayers.XO);
 
 		assertEquals(GameState.notStarted, game.state());
@@ -26,8 +27,9 @@ final class GamesImplTest {
 	void testGame() {
 		WinConditionCheckers winConditionCheckers = (rules) -> (move) -> true;
 		FakeRules rules = new FakeRules(3, 3);
+		GamesRepository repo = new InMemoryGamesRepository(winConditionCheckers);
 
-		Games impl = new GamesImpl(winConditionCheckers);
+		Games impl = new GamesImpl(repo);
 		Game expected = impl.newGame(rules, FakePlayers.XO);
 		Game actual = impl.game(expected.id()).get();
 
@@ -38,8 +40,9 @@ final class GamesImplTest {
 	void testDifferentGameIds() {
 		WinConditionCheckers winConditionCheckers = (rules) -> (move) -> true;
 		FakeRules rules = new FakeRules(3, 3);
+		GamesRepository repo = new InMemoryGamesRepository(winConditionCheckers);
 
-		Games impl = new GamesImpl(winConditionCheckers);
+		Games impl = new GamesImpl(repo);
 		Set<String> ids = new HashSet<>();
 		int toCreate = 10;
 		for (int i = 0; i < toCreate; i++) {

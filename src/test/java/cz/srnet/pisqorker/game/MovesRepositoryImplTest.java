@@ -48,13 +48,13 @@ final class MovesRepositoryImplTest {
 
 	@Test
 	void testOneMoveWithWrongPlayer1() {
-		assertThrows(IllegalArgumentException.class,
+		assertThrows(IllegalPieceException.class,
 				() -> doTestOneMove(impl -> impl.move().as(Piece.X.other()).to(0, 0)));
 	}
 
 	@Test
 	void testOneMoveWithWrongPlayer2() {
-		assertThrows(IllegalArgumentException.class,
+		assertThrows(IllegalPieceException.class,
 				() -> doTestOneMove(impl -> impl.move().as(Piece.X.other()).to(Coordinates.of(0, 0))));
 	}
 

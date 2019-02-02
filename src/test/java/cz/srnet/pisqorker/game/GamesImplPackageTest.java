@@ -16,8 +16,9 @@ final class GamesImplPackageTest {
 	void test3x3Draw() {
 		WinConditionCheckers winConditionCheckers = IteratingWinConditionChecker::new;
 		Rules rules = new RulesImpl(3, 3);
+		GamesRepository repo = new InMemoryGamesRepository(winConditionCheckers);
 
-		Games impl = new GamesImpl(winConditionCheckers);
+		Games impl = new GamesImpl(repo);
 		Game game = impl.newGame(rules, players());
 
 		assertEquals(GameState.notStarted, game.state());
@@ -36,8 +37,9 @@ final class GamesImplPackageTest {
 	void test3x3WonByX() {
 		WinConditionCheckers winConditionCheckers = IteratingWinConditionChecker::new;
 		Rules rules = new RulesImpl(3, 3);
+		GamesRepository repo = new InMemoryGamesRepository(winConditionCheckers);
 
-		Games impl = new GamesImpl(winConditionCheckers);
+		Games impl = new GamesImpl(repo);
 		Game game = impl.newGame(rules, players());
 
 		assertEquals(GameState.notStarted, game.state());

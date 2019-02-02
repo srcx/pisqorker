@@ -99,7 +99,7 @@ final class MoveImplTest {
 	void testOccupiedPositionSecondMove() {
 		Move firstMove = firstMove();
 
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move().to(0, 0));
+		assertThrows(IllegalCoordinatesException.class, () -> firstMove.move().to(0, 0));
 	}
 
 	@Test
@@ -108,11 +108,11 @@ final class MoveImplTest {
 
 		Move firstMove = firstMove();
 
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move().to(3, 3));
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move().to(-3, -3));
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move().to(3, -3));
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move().to(-3, 3));
-		assertThrows(IllegalArgumentException.class, () -> firstMove.move().to(4, 4));
+		assertThrows(IllegalCoordinatesException.class, () -> firstMove.move().to(3, 3));
+		assertThrows(IllegalCoordinatesException.class, () -> firstMove.move().to(-3, -3));
+		assertThrows(IllegalCoordinatesException.class, () -> firstMove.move().to(3, -3));
+		assertThrows(IllegalCoordinatesException.class, () -> firstMove.move().to(-3, 3));
+		assertThrows(IllegalCoordinatesException.class, () -> firstMove.move().to(4, 4));
 	}
 
 	@Test
@@ -174,7 +174,7 @@ final class MoveImplTest {
 	void testGameAlreadyEndedAfterWinOn3x3() {
 		Move lastMove = win3x3();
 
-		assertThrows(IllegalStateException.class, () -> lastMove.move().to(1, 1));
+		assertThrows(IllegalGameStateException.class, () -> lastMove.move().to(1, 1));
 	}
 
 }

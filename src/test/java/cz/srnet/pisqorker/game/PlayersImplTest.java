@@ -19,7 +19,7 @@ final class PlayersImplTest {
 	void testInvalidPlayers(@NonNull Piece first, @NonNull Piece second, boolean expectedFailed) throws Throwable {
 		Executable call = () -> new PlayersImpl(new FakePlayer(first), new FakePlayer(second));
 		if (expectedFailed) {
-			assertThrows(IllegalArgumentException.class, call);
+			assertThrows(IllegalGameSetupException.class, call);
 		} else {
 			call.execute();
 		}
