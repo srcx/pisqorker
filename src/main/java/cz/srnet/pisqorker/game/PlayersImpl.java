@@ -31,10 +31,7 @@ final class PlayersImpl implements Players {
 	@Override
 	@NonNull
 	public TransferablePlayers transferOut() {
-		TransferablePlayers out = new TransferablePlayers();
-		out.setFirst(first);
-		out.setSecond(second);
-		return out;
+		return new TransferablePlayers(first, second);
 	}
 
 	@Override

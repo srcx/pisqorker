@@ -27,11 +27,7 @@ final class HumanPlayerImpl implements HumanPlayer {
 	@Override
 	@NonNull
 	public TransferablePlayer transferOut() {
-		TransferablePlayer out = new TransferablePlayer();
-		out.setPiece(piece);
-		out.setUser(user);
-		out.setType(PlayerType.human);
-		return out;
+		return new TransferablePlayer(piece, PlayerType.human, user);
 	}
 
 	@Override

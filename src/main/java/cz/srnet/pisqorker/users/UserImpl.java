@@ -17,9 +17,7 @@ final class UserImpl implements User {
 	@Override
 	@NonNull
 	public TransferableUser transferOut() {
-		TransferableUser out = new TransferableUser();
-		out.setId(id);
-		return out;
+		return new TransferableUser(id);
 	}
 
 	@Override

@@ -2,52 +2,43 @@ package cz.srnet.pisqorker.game;
 
 import java.util.List;
 
+import org.springframework.lang.NonNull;
+
 public final class TransferableGame {
 
-	private String id;
-	private Rules rules;
-	private GameState state;
-	private List<Coordinates> moves;
-	private Players players;
+	private final @NonNull String id;
+	private final @NonNull Rules rules;
+	private final @NonNull GameState state;
+	private final @NonNull List<Coordinates> moves;
+	private final @NonNull Players players;
 
-	public String getId() {
+	public TransferableGame(@NonNull String id, @NonNull Rules rules, @NonNull GameState state,
+			@NonNull List<Coordinates> moves, @NonNull Players players) {
+		this.id = id;
+		this.rules = rules;
+		this.state = state;
+		this.moves = moves;
+		this.players = players;
+	}
+
+	public @NonNull String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public Rules getRules() {
+	public @NonNull Rules getRules() {
 		return rules;
 	}
 
-	public void setRules(Rules rules) {
-		this.rules = rules;
-	}
-
-	public GameState getState() {
+	public @NonNull GameState getState() {
 		return state;
 	}
 
-	public void setState(GameState state) {
-		this.state = state;
-	}
-
-	public List<Coordinates> getMoves() {
+	public @NonNull List<Coordinates> getMoves() {
 		return moves;
 	}
 
-	public void setMoves(List<Coordinates> moves) {
-		this.moves = moves;
-	}
-
-	public Players getPlayers() {
+	public @NonNull Players getPlayers() {
 		return players;
-	}
-
-	public void setPlayers(Players players) {
-		this.players = players;
 	}
 
 }

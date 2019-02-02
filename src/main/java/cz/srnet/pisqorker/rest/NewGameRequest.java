@@ -1,8 +1,9 @@
 package cz.srnet.pisqorker.rest;
 
-import java.util.Objects;
-
 import org.springframework.lang.NonNull;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import cz.srnet.pisqorker.game.Game;
 import cz.srnet.pisqorker.game.Games;
@@ -11,28 +12,18 @@ import cz.srnet.pisqorker.game.Rules;
 
 final class NewGameRequest {
 
-	private Rules rules;
-	private Players players;
+	private final @NonNull Rules rules;
+	private final @NonNull Players players;
+
+	@JsonCreator
+	public NewGameRequest(@JsonProperty(value = "rules", required = true) @NonNull Rules rules,
+			@JsonProperty(value = "players", required = true) @NonNull Players players) {
+		this.rules = rules;
+		this.players = players;
+	}
 
 	public @NonNull Game execute(@NonNull Games games) {
-		// TODO better validation
-		return games.newGame(Objects.requireNonNull(rules), Objects.requireNonNull(players));
-	}
-
-	public Rules getRules() {
-		return rules;
-	}
-
-	public void setRules(Rules rules) {
-		this.rules = rules;
-	}
-
-	public Players getPlayers() {
-		return players;
-	}
-
-	public void setPlayers(Players players) {
-		this.players = players;
+		return games.newGame(rules, players);
 	}
 
 }

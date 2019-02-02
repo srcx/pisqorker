@@ -41,13 +41,8 @@ final class GameImpl implements Game {
 	@Override
 	@NonNull
 	public TransferableGame transferOut() {
-		TransferableGame out = new TransferableGame();
-		out.setId(id());
-		out.setRules(context.rules());
-		out.setState(state());
-		out.setMoves(moves.stream().map(Move::xy).collect(Collectors.toList()));
-		out.setPlayers(players);
-		return out;
+		return new TransferableGame(id(), context.rules(), state(),
+				Objects.requireNonNull(moves.stream().map(Move::xy).collect(Collectors.toList())), players);
 	}
 
 	@Override

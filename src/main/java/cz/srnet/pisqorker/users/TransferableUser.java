@@ -1,34 +1,33 @@
 package cz.srnet.pisqorker.users;
 
-import java.util.Objects;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import cz.srnet.pisqorker.rest.TransferableIn;
 
 public final class TransferableUser implements TransferableIn<User> {
 
-	private String id;
+	@Autowired
+	private @NonNull Users users;
 
-	private transient Users users;
+	private final @NonNull String id;
 
-	public void injectUsers(Users users) {
-		this.users = users;
+	@JsonCreator
+	public TransferableUser(@JsonProperty(value = "id", required = true) @NonNull String id) {
+		this.id = id;
 	}
 
 	@Override
 	@NonNull
 	public User transferIn() {
-		// TODO better validation
-		return Objects.requireNonNull(users.user(Objects.requireNonNull(id)).get());
+		return users.user(id).get();
 	}
 
-	public String getId() {
+	public @NonNull String getId() {
 		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 }

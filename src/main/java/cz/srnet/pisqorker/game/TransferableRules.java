@@ -2,18 +2,19 @@ package cz.srnet.pisqorker.game;
 
 import org.springframework.lang.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import cz.srnet.pisqorker.rest.TransferableIn;
 
 public final class TransferableRules implements TransferableIn<Rules> {
 
-	private int boardSize;
-	private int connectToWin;
+	private final int boardSize;
+	private final int connectToWin;
 
-	public TransferableRules() {
-		// for jackson
-	}
-
-	public TransferableRules(int boardSize, int connectToWin) {
+	@JsonCreator
+	public TransferableRules(@JsonProperty(value = "boardSize", required = true) int boardSize,
+			@JsonProperty(value = "connectToWin", required = true) int connectToWin) {
 		this.boardSize = boardSize;
 		this.connectToWin = connectToWin;
 	}
@@ -22,16 +23,8 @@ public final class TransferableRules implements TransferableIn<Rules> {
 		return boardSize;
 	}
 
-	public void setBoardSize(int boardSize) {
-		this.boardSize = boardSize;
-	}
-
 	public int getConnectToWin() {
 		return connectToWin;
-	}
-
-	public void setConnectToWin(int connectToWin) {
-		this.connectToWin = connectToWin;
 	}
 
 	@Override

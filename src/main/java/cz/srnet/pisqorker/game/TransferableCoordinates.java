@@ -2,18 +2,19 @@ package cz.srnet.pisqorker.game;
 
 import org.springframework.lang.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import cz.srnet.pisqorker.rest.TransferableIn;
 
 public final class TransferableCoordinates implements TransferableIn<Coordinates> {
 
-	private int x;
-	private int y;
+	private final int x;
+	private final int y;
 
-	public TransferableCoordinates() {
-		// for jackson
-	}
-
-	public TransferableCoordinates(int x, int y) {
+	@JsonCreator
+	public TransferableCoordinates(@JsonProperty(value = "x", required = true) int x,
+			@JsonProperty(value = "y", required = true) int y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -28,16 +29,8 @@ public final class TransferableCoordinates implements TransferableIn<Coordinates
 		return x;
 	}
 
-	public void setX(int x) {
-		this.x = x;
-	}
-
 	public int getY() {
 		return y;
-	}
-
-	public void setY(int y) {
-		this.y = y;
 	}
 
 }

@@ -1,11 +1,11 @@
 package cz.srnet.pisqorker.rest;
 
-import java.util.function.Consumer;
+import java.util.Objects;
 
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -27,46 +27,45 @@ import cz.srnet.pisqorker.game.TransferablePlayers;
 import cz.srnet.pisqorker.game.TransferableRules;
 import cz.srnet.pisqorker.users.TransferableUser;
 import cz.srnet.pisqorker.users.User;
-import cz.srnet.pisqorker.users.Users;
 
 @Component
 final class JacksonMappings implements Jackson2ObjectMapperBuilderCustomizer {
 
-	private final @NonNull Users users;
+	private final @NonNull AutowireCapableBeanFactory beanFactory;
 
-	public JacksonMappings(@NonNull Users users) {
-		this.users = users;
+	public JacksonMappings(@NonNull AutowireCapableBeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
 	}
 
 	@Override
 	public void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
-		serializer(Rules.class, TransferableRules.class, jacksonObjectMapperBuilder);
-		deserializer(Rules.class, TransferableRules.class, null, jacksonObjectMapperBuilder);
+		both(Rules.class, TransferableRules.class, jacksonObjectMapperBuilder);
 
 		serializer(Game.class, TransferableGame.class, jacksonObjectMapperBuilder);
 
 		serializer(HumanPlayer.class, TransferablePlayer.class, jacksonObjectMapperBuilder);
-		deserializer(Player.class, TransferablePlayer.class, t -> t.injectUsers(users), jacksonObjectMapperBuilder);
+		deserializer(Player.class, TransferablePlayer.class, jacksonObjectMapperBuilder);
 
-		serializer(User.class, TransferableUser.class, jacksonObjectMapperBuilder);
-		deserializer(User.class, TransferableUser.class, t -> t.injectUsers(users), jacksonObjectMapperBuilder);
+		both(User.class, TransferableUser.class, jacksonObjectMapperBuilder);
 
-		serializer(Players.class, TransferablePlayers.class, jacksonObjectMapperBuilder);
-		deserializer(Players.class, TransferablePlayers.class, null, jacksonObjectMapperBuilder);
+		both(Players.class, TransferablePlayers.class, jacksonObjectMapperBuilder);
 
-		serializer(Coordinates.class, TransferableCoordinates.class, jacksonObjectMapperBuilder);
-		deserializer(Coordinates.class, TransferableCoordinates.class, null, jacksonObjectMapperBuilder);
+		both(Coordinates.class, TransferableCoordinates.class, jacksonObjectMapperBuilder);
+	}
+
+	private <C extends TransferableOut<T>, T extends TransferableIn<C>> void both(@NonNull Class<C> clazz,
+			@NonNull Class<T> transferable, Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
+		serializer(clazz, transferable, jacksonObjectMapperBuilder);
+		deserializer(clazz, transferable, jacksonObjectMapperBuilder);
 	}
 
 	private <C, T extends TransferableIn<C>> void deserializer(@NonNull Class<C> clazz, @NonNull Class<T> transferable,
-			@Nullable Consumer<T> convertCallback, Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
+			Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
 		jacksonObjectMapperBuilder.deserializerByType(clazz, new StdDelegatingDeserializer<>(new Converter<T, C>() {
 
 			@Override
 			public C convert(T value) {
-				if (convertCallback != null) {
-					convertCallback.accept(value);
-				}
+				beanFactory.autowireBean(Objects.requireNonNull(value));
 				return value.transferIn();
 			}
 
