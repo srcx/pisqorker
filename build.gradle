@@ -7,6 +7,10 @@ buildscript {
     }
 }
 
+plugins {
+  id "com.moowork.node" version "1.2.0"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -33,3 +37,20 @@ dependencies {
     testCompile("org.junit.jupiter:junit-jupiter-engine")
     testCompile("org.junit.jupiter:junit-jupiter-params")
 }
+
+node {
+	download = true
+}
+
+task webpack(type: NodeTask) {
+    inputs.files(fileTree('node_modules'))
+    inputs.files(fileTree('src/main/js'))
+    inputs.file('package.json')
+    inputs.file('webpack.config.js')
+    
+    outputs.dir('src/main/resources/static/built')
+    
+    script = file("$projectDir/node_modules/.bin/webpack")
+}
+webpack.group = "local"
+
